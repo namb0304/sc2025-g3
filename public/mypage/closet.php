@@ -2,7 +2,7 @@
 // sc2025-g3/public/mypage/closet.php
 
 // ★ 変更点: パスを修正
-require_once __DIR__ . '/../../src/helpers.php';
+require_once __DIR__ . '/../src/helpers.php';
 login_check();
 
 $message = '';

@@ -2,7 +2,7 @@
 // sc2025-g3/public/mypage/mypage.php
 
 // ★ 変更点: パスを修正
-require_once '../../src/helpers.php';
+require_once '/../../src/helpers.php';
 login_check();
 
 $suggestion_html = '';
