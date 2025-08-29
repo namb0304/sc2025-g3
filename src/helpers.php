@@ -1,16 +1,17 @@
 <?php
+// sc2025-g3/src/helpers.php
+
 // セッションを開始
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
 // データディレクトリのパスを定義
-define('DATA_DIR', __DIR__ . '/data/');
+// ★ 変更点: `src`ディレクトリから一つ上の階層の`data`を指すように修正
+define('DATA_DIR', __DIR__ . '/../data/');
 
 /**
- * JSONファイルを安全に読み込む関数（修正版）
- * @param string $filename ファイル名 (拡張子なし)
- * @return array デコードされたデータ（失敗した場合は空配列）
+ * JSONファイルを安全に読み込む関数
  */
 function load_data($filename) {
     $file = DATA_DIR . $filename . '.json';
@@ -18,35 +19,43 @@ function load_data($filename) {
         return [];
     }
     $content = file_get_contents($file);
-    // ファイルが空の場合、空配列を返す
     if (empty($content)) {
         return [];
     }
     $data = json_decode($content, true);
-
-    // json_decodeが失敗した場合（例: JSON形式が不正）、空配列を返す
     if (json_last_error() !== JSON_ERROR_NONE) {
         return []; 
     }
-
     return $data;
 }
 
 /**
- * データをJSONファイルに保存する関数
+ * ★ 変更点: flockを使って安全に書き込む関数に置き換え
+ * データをJSONファイルに安全に保存する関数
  * @param string $filename ファイル名 (拡張子なし)
  * @param array $data 保存するデータ
+ * @return bool 成功した場合はtrue、失敗した場合はfalse
  */
 function save_data($filename, $data) {
     $file = DATA_DIR . $filename . '.json';
-    file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    $fp = fopen($file, 'w');
+    if ($fp === false) {
+        return false;
+    }
+    if (flock($fp, LOCK_EX)) {
+        fwrite($fp, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        fflush($fp);
+        flock($fp, LOCK_UN);
+    } else {
+        fclose($fp);
+        return false;
+    }
+    fclose($fp);
+    return true;
 }
 
 /**
- * 配列の中からIDで特定の要素を検索する関数
- * @param array $data 検索対象の配列
- * @param string|int $id 検索するID
- * @return array|null 見つかった要素、またはnull
+ * IDで要素を検索する関数
  */
 function find_by_id($data, $id) {
     foreach ($data as $item) {
@@ -59,7 +68,6 @@ function find_by_id($data, $id) {
 
 /**
  * ログイン状態をチェックする関数
- * @return bool ログインしていればtrue
  */
 function is_logged_in() {
     return isset($_SESSION['user_id']);
@@ -70,15 +78,14 @@ function is_logged_in() {
  */
 function login_check() {
     if (!is_logged_in()) {
-        header('Location: login.php');
+        // ★ 変更点: パスを絶対パスに修正
+        header('Location: /auth/login.php');
         exit;
     }
 }
 
 /**
  * ユーザーIDからユーザー情報を取得する関数
- * @param int $id ユーザーID
- * @return array|null ユーザー情報、またはnull
  */
 function get_user_by_id($id) {
     $users = load_data('users');
