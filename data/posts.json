@@ -24,5 +24,15 @@
             }
         ],
         "likes": 0
+    },
+    {
+        "id": "68b1ac40b1095",
+        "user_id": 1,
+        "username": "s2222019@stu.musashino-u.ac.jp",
+        "title": "test",
+        "description": "ああああ",
+        "post_image": "uploads\/s2222019@stu.musashino-u.ac.jp\/posts\/1756474432_thumb-1548-3.jpg",
+        "comments": [],
+        "likes": 0
     }
 ]

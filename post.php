@@ -2,54 +2,72 @@
 require_once 'helpers.php';
 login_check();
 
+// 自分のクローゼットアイテムを取得
+$my_closet_items = [];
+$all_closet_items = load_data('closet');
+if (!empty($all_closet_items)) {
+    foreach ($all_closet_items as $item) {
+        if ($item['user_id'] == $_SESSION['user_id']) {
+            $my_closet_items[] = $item;
+        }
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $posts = load_data('posts');
     $user = get_user_by_id($_SESSION['user_id']);
     
     $title = htmlspecialchars($_POST['title']);
     $description = htmlspecialchars($_POST['description']);
-    $post_image_path = '';
+    $selected_item_path = $_POST['selected_item_path'] ?? ''; // 選択されたアイテムの画像パス
 
-    if (!empty($_FILES['post_image']['name'])) {
-        $target_dir = 'uploads/' . $user['username'] . '/posts/';
-        if (!is_dir($target_dir)) {
-            mkdir($target_dir, 0777, true);
-        }
-        $filename = time() . '_' . basename($_FILES['post_image']['name']);
-        $target_file = $target_dir . $filename;
-        if (move_uploaded_file($_FILES['post_image']['tmp_name'], $target_file)) {
-            $post_image_path = '/' . $target_file;
-        }
-    }
-
-    if (!empty($post_image_path)) {
+    if (!empty($selected_item_path)) {
         $new_post = [
             'id' => uniqid(),
             'user_id' => $user['id'],
             'username' => $user['username'],
             'title' => $title,
             'description' => $description,
-            'post_image' => $post_image_path,
+            'post_image' => $selected_item_path, // クローゼットアイテムのパスを保存
             'comments' => [],
             'likes' => 0
         ];
         $posts[] = $new_post;
         save_data('posts', $posts);
-        header('Location: index.php');
+        header('Location: ' . BASE_URL . '/index.php');
         exit;
+    } else {
+        $error = "投稿するアイテムを選択してください。";
     }
 }
-?>
 
-<?php include 'templates/header.php'; ?>
+include 'templates/header.php';
+?>
 <div class="container">
     <h2>コーディネートを投稿する</h2>
-    <form action="post.php" method="post" enctype="multipart/form-data">
-        <input type="text" name="title" placeholder="タイトル" required><br>
-        <textarea name="description" placeholder="コーディネートの説明" required></textarea><br>
-        <label>メイン画像 (必須):</label>
-        <input type="file" name="post_image" required><br>
-        <button type="submit">投稿する</button>
+    <form action="<?= BASE_URL ?>/post.php" method="post">
+        
+        <h3>1. コーディネートの主役を選択</h3>
+        <?php if (empty($my_closet_items)): ?>
+            <p>投稿できるアイテムがクローゼットにありません。先に<a href="<?= BASE_URL ?>/closet.php">クローゼット登録</a>をしてください。</p>
+        <?php else: ?>
+            <div class="item-selection-grid">
+                <?php foreach(array_reverse($my_closet_items) as $item): ?>
+                    <label class="selectable-item">
+                        <input type="radio" name="selected_item_path" value="<?= htmlspecialchars($item['image_path']) ?>" required>
+                        <img src="<?= htmlspecialchars($item['image_path']) ?>" alt="選択肢">
+                    </label>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($my_closet_items)): ?>
+            <h3>2. コーディネート情報を入力</h3>
+            <?php if(isset($error)): ?><p class="error"><?= $error ?></p><?php endif; ?>
+            <input type="text" name="title" placeholder="コーディネートのタイトル" required><br>
+            <textarea name="description" placeholder="コーディネートの説明やポイント" required></textarea><br>
+            <button type="submit">この内容で投稿する</button>
+        <?php endif; ?>
     </form>
 </div>
 <?php include 'templates/footer.php'; ?>

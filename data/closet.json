@@ -32,5 +32,46 @@
                 "ストリート"
             ]
         }
+    },
+    {
+        "id": "68b1a8b2bc06e",
+        "user_id": 1,
+        "image_path": "uploads\/s2222019@stu.musashino-u.ac.jp\/closet\/1756473522_thumb-1548-3.jpg",
+        "tags": {
+            "category": "シューズ",
+            "color": "#08d6e7",
+            "season": [
+                "秋",
+                "冬"
+            ],
+            "style_tags": [
+                "カジュアル",
+                "ストリート"
+            ]
+        }
+    },
+    {
+        "id": "item_68b1b1e00f750",
+        "user_id": 1,
+        "image_path": "uploads\/s2222019@stu.musashino-u.ac.jp\/closet\/1756475872_IMG_9237.jpg",
+        "manual_tags": {
+            "category": "アウター",
+            "genres": [
+                "ストリート"
+            ],
+            "notes": ""
+        }
+    },
+    {
+        "id": "item_68b1b23f2c906",
+        "user_id": 1,
+        "image_path": "uploads\/s2222019@stu.musashino-u.ac.jp\/closet\/1756475967_IMG_9237.jpg",
+        "manual_tags": {
+            "category": "アウター",
+            "genres": [
+                "ストリート"
+            ],
+            "notes": ""
+        }
     }
 ]

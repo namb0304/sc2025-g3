@@ -1,0 +1,26 @@
+Content-Type: application/json
+
+{
+  "68b1a8b2bc06e": {
+    "ai_category": "シューズ",
+    "ai_season": [
+      "秋",
+      "冬"
+    ],
+    "ai_style_tags": [
+      "きれいめ",
+      "ストリート"
+    ]
+  },
+  "item_68b1b1e00f750": {
+    "ai_category": "ワンピース",
+    "ai_season": [
+      "春",
+      "夏"
+    ],
+    "ai_style_tags": [
+      "きれいめ",
+      "ストリート"
+    ]
+  }
+}

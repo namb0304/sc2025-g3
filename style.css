@@ -38,10 +38,17 @@ form button:hover { background-color: #0056b3; }
 .comments-section { margin-top: 30px; }
 .comments-section ul { list-style: none; padding: 0; }
 .comments-section li { background: #f9f9f9; border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
-.comments-section li strong { color: #0056b3; }
-.comments-section li span { font-size: 12px; color: #888; display: block; margin-top: 5px; }
 
 /* Closet & AI Page */
 .closet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
 .closet-item img { width: 100%; height: auto; border-radius: 5px; }
 .suggestion-box { margin-top: 20px; background: #eef7ff; padding: 20px; border-left: 5px solid #007bff; }
+
+/* 【追加】Item Selection Grid (post.php) */
+.item-selection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.selectable-item { position: relative; display: block; cursor: pointer; }
+.selectable-item img { width: 100%; height: auto; border-radius: 5px; border: 3px solid transparent; transition: border-color .2s ease; }
+/* ラジオボタンを非表示に */
+.selectable-item input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+/* 選択されたアイテムのスタイル */
+.selectable-item input[type="radio"]:checked + img { border-color: #007bff; box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); }
