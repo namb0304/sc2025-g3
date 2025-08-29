@@ -107,27 +107,59 @@
             margin-bottom: 1rem;
         }
         
-        .image-preview {
+        /* ▼▼▼【CSS変更】プレビューエリアをグリッドレイアウトに変更 ▼▼▼ */
+        .image-preview-container {
             width: 100%;
-            height: 300px;
+            min-height: 300px;
             border: 2px dashed #ddd;
             border-radius: 8px;
+            display: grid; /* グリッドレイアウトに変更 */
+            grid-template-columns: repeat(2, 1fr); /* 2列 */
+            grid-template-rows: repeat(2, 1fr);    /* 2行 */
+            gap: 10px;      /* 画像間のスペース */
+            padding: 10px;
+            background-color: #f7f7f7;
+            position: relative;
+        }
+
+        .preview-image-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 100%; /* 正方形を維持 */
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: #eee;
+        }
+
+        .preview-image-wrapper img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 画像をコンテナいっぱいに表示 */
+        }
+        
+        .remove-image-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1rem;
-            background-color: #f7f7f7;
-            overflow: hidden;
-            position: relative;
+            font-size: 14px;
+            line-height: 1;
+            z-index: 10;
         }
-        
-        .image-preview img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            display: none;
-        }
-        
+        /* ▲▲▲【CSS変更】ここまで ▲▲▲ */
+
         .image-upload-label {
             text-align: center;
             color: #777;
@@ -183,6 +215,12 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 0.95rem;
+            /* グリッド全体に広がるように設定 */
+            grid-column: 1 / -1;
+            grid-row: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         @media (max-width: 768px) {
@@ -213,22 +251,21 @@
             
             <form id="postForm">
                 <div class="form-group">
-                    <label for="outfitImage">服装の写真</label>
+                    <label for="outfitImage">服装の写真（最大4枚まで）</label>
                     <div class="image-upload">
-                        <div class="image-preview" id="imagePreview">
-                            <img src="" alt="プレビュー" id="previewImage">
+                        <div class="image-preview-container" id="imagePreviewContainer">
                             <div class="placeholder-text" id="placeholderText">
-                                写真をここにドラッグ&ドロップするか
-クリックして選択してください
+                                写真をここにドラッグ&ドロップするか<br>
+                                クリックして選択してください (最大4枚)
                             </div>
                         </div>
-                        <input type="file" id="outfitImage" accept="image/*" required>
-                    </div>
+                        <input type="file" id="outfitImage" accept="image/*" required multiple style="display: none;">
+                        </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="outfitDescription">コメント</label>
-                    <textarea id="outfitDescription" placeholder="今日の服装について、悩みや質問を書いてください..." required></textarea>
+                    <textarea id="outfitDescription" placeholder="服装について悩みや質問を書いてください" required></textarea>
                 </div>
                 
                 <div class="button-group">
@@ -240,141 +277,160 @@
     </div>
     
     <script>
-        // 画像プレビュー機能
+        // ▼▼▼【JS変更】ここからJavaScriptのロジックを大幅に修正 ▼▼▼
         const imageInput = document.getElementById('outfitImage');
-        const imagePreview = document.getElementById('previewImage');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
         const placeholderText = document.getElementById('placeholderText');
-        
-        imageInput.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            
-            if (file) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    imagePreview.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                    placeholderText.style.display = 'none';
-                }
-                
-                reader.readAsDataURL(file);
-            } else {
-                imagePreview.style.display = 'none';
-                placeholderText.style.display = 'block';
-            }
+        const MAX_FILES = 4;
+        let selectedFiles = []; // 選択されたファイルを管理する配列（買い物かごのようなもの）
+
+        // --- プレビューエリアをクリックした時にファイル選択ダイアログを開く ---
+        imagePreviewContainer.addEventListener('click', () => imageInput.click());
+
+        // --- ファイルが選択された時の処理 ---
+        imageInput.addEventListener('change', (event) => {
+            const files = event.target.files;
+            handleFiles(files);
         });
-        
-        // ドラッグ&ドロップ機能
-        const dropArea = document.querySelector('.image-preview');
-        
+
+        // --- ドラッグ&ドロップの処理 ---
+        const dropArea = imagePreviewContainer;
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, preventDefaults, false);
         });
-        
         function preventDefaults(e) {
             e.preventDefault();
             e.stopPropagation();
         }
-        
         ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, highlight, false);
+            dropArea.addEventListener(eventName, () => dropArea.style.borderColor = 'var(--primary-color)', false);
         });
-        
         ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, unhighlight, false);
+            dropArea.addEventListener(eventName, () => dropArea.style.borderColor = '#ddd', false);
         });
+        dropArea.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        }, false);
         
-        function highlight() {
-            dropArea.style.borderColor = '#4a6fa5';
-            dropArea.style.backgroundColor = '#f0f4fa';
-        }
-        
-        function unhighlight() {
-            dropArea.style.borderColor = '#ddd';
-            dropArea.style.backgroundColor = '#f7f7f7';
-        }
-        
-        dropArea.addEventListener('drop', handleDrop, false);
-        
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const file = dt.files[0];
+        // --- 選択されたファイルを処理するメインの関数 ---
+        function handleFiles(files) {
+            const currentFileCount = selectedFiles.length;
+            const newFiles = Array.from(files);
             
-            imageInput.files = dt.files;
+            if (currentFileCount + newFiles.length > MAX_FILES) {
+                alert(`画像は最大${MAX_FILES}枚までです。`);
+                // 超えた分はカットする
+                const remainingSlots = MAX_FILES - currentFileCount;
+                selectedFiles = selectedFiles.concat(newFiles.slice(0, remainingSlots));
+            } else {
+                selectedFiles = selectedFiles.concat(newFiles);
+            }
             
-            if (file) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    imagePreview.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                    placeholderText.style.display = 'none';
-                }
-                
-                reader.readAsDataURL(file);
+            updatePreview(); // プレビューを更新
+            imageInput.value = ''; // 次回同じファイルを選択できるようにリセット
+        }
+
+        // --- プレビュー表示を更新する関数 ---
+        function updatePreview() {
+            imagePreviewContainer.innerHTML = ''; // 一旦プレビューを空にする
+
+            if (selectedFiles.length === 0) {
+                imagePreviewContainer.appendChild(placeholderText); // ファイルがなければプレースホルダーを表示
+                placeholderText.style.display = 'flex';
+                imageInput.required = true; // ファイルが0枚なら必須に戻す
+            } else {
+                placeholderText.style.display = 'none';
+                imageInput.required = false; // ファイルが1枚以上あれば必須を解除
+
+                selectedFiles.forEach((file, index) => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = (e) => {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'preview-image-wrapper';
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'remove-image-btn';
+                        removeBtn.innerHTML = '&times;';
+                        removeBtn.type = 'button'; // formのsubmitを防止
+                        removeBtn.addEventListener('click', (event) => {
+                            event.stopPropagation(); // 親要素のクリックイベント（ファイル選択）が発火しないようにする
+                            selectedFiles.splice(index, 1); // 配列からファイルを削除
+                            updatePreview(); // プレビューを再描画
+                        });
+                        
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(removeBtn);
+                        imagePreviewContainer.appendChild(wrapper);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                });
             }
         }
-        
-        // クリックで画像選択ダイアログを開く
-        dropArea.addEventListener('click', function() {
-            imageInput.click();
-        });
-        
-        // フォームリセット
-        document.getElementById('resetButton').addEventListener('click', function() {
+
+        // --- フォームリセット処理 ---
+        document.getElementById('resetButton').addEventListener('click', () => {
             document.getElementById('postForm').reset();
-            imagePreview.style.display = 'none';
-            placeholderText.style.display = 'block';
+            selectedFiles = []; // ファイル管理配列を空にする
+            updatePreview();    // プレビューを初期状態に戻す
             document.getElementById('successMessage').style.display = 'none';
         });
-        
-        // フォーム送信処理
-        document.getElementById('postForm').addEventListener('submit', function(e) {
+
+        // --- フォーム送信処理 ---
+        document.getElementById('postForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const description = document.getElementById('outfitDescription').value;
-            
-            // 画像のチェック
-            if (!imageInput.files || !imageInput.files[0]) {
-                alert('画像を選択してください');
+
+            if (selectedFiles.length === 0) {
+                alert('画像を1枚以上選択してください。');
                 return;
             }
+
+            const description = document.getElementById('outfitDescription').value;
             
-            const reader = new FileReader();
+            // 全ての画像のDataURL化が終わるのを待つ
+            const imagePromises = selectedFiles.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => resolve(event.target.result);
+                    reader.readAsDataURL(file);
+                });
+            });
             
-            reader.onload = function(e) {
-                const imageData = e.target.result;
-                
-                // 新しい投稿データを作成
-                const post = {
-                    id: Date.now(),
-                    image: imageData,
-                    description: description,
-                    date: new Date().toISOString()
-                };
-                
-                // 既存の投稿を取得して新しい投稿を追加
-                let posts = JSON.parse(localStorage.getItem('fashionPosts')) || [];
-                posts.push(post);
-                localStorage.setItem('fashionPosts', JSON.stringify(posts));
-                
-                // 成功メッセージを表示
-                const successMessage = document.getElementById('successMessage');
-                successMessage.style.display = 'block';
-                
-                // フォームをリセット
-                document.getElementById('postForm').reset();
-                imagePreview.style.display = 'none';
-                placeholderText.style.display = 'block';
-                
-                // 3秒後に成功メッセージを非表示
-                setTimeout(() => {
-                    successMessage.style.display = 'none';
-                }, 3000);
+            const imagesData = await Promise.all(imagePromises);
+
+            const post = {
+                id: Date.now(),
+                images: imagesData, // 複数画像を配列として保存
+                description: description,
+                date: new Date().toISOString()
             };
+
+            // userPosts に変更（マイページとの連携を考慮）
+            let posts = JSON.parse(localStorage.getItem('userPosts')) || [];
+            posts.unshift(post); // 新しい投稿を先頭に追加
+            localStorage.setItem('userPosts', JSON.stringify(posts));
+
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
             
-            reader.readAsDataURL(imageInput.files[0]);
+            // リセットボタンの処理を再利用
+            document.getElementById('resetButton').click();
+
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+                // 投稿後にマイページにリダイレクトする場合
+                // window.location.href = 'mypage.html';
+            }, 2000);
         });
+        
+        // 初期状態のプレビュー表示
+        updatePreview();
+        // ▲▲▲【JS変更】ここまで ▲▲▲
     </script>
 </body>
 </html>
