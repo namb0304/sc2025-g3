@@ -81,7 +81,7 @@
             display: flex;
             align-items: center;
             gap: 0.4rem;
-            color: #7e57c2; /* AIタブ用の特別な色 */
+            color: #7e57c2;
         }
         
         .ai-nav-item i {
@@ -122,11 +122,10 @@
             padding: 0 1rem;
         }
         
-        /* マイページ固有のスタイル */
         .profile-container {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 2rem;
+            gap: 0;
         }
         
         .profile-header {
@@ -189,6 +188,60 @@
             justify-content: center;
         }
         
+        .profile-tabs {
+            display: flex;
+            border-bottom: 1px solid #e1e8ed;
+            background-color: #fff;
+            margin-top: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .tab-item {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--light-text);
+            position: relative;
+            transition: color 0.3s, background-color 0.3s;
+        }
+
+        .tab-item:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .tab-item.active {
+            color: var(--primary-color);
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+
+        .tab-content-container {
+            margin-top: 2rem;
+        }
+
+        .tab-content {
+        display: none;
+        opacity: 0; /* ← 追加：最初は透明にしておく */
+        transition: opacity 0.4s ease-in-out; /* ← 追加：透明度を0.4秒かけて変化させる */
+        }
+
+        .tab-content.active {
+        display: block;
+        opacity: 1; /* ← 追加：activeになったら透明度を1（不透明）にする */
+        }
+
         .posts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -274,7 +327,6 @@
             box-shadow: var(--box-shadow);
             padding: 2rem;
             text-align: center;
-            margin-bottom: 2rem;
         }
         
         .closet-description {
@@ -376,7 +428,6 @@
     
     <div class="main-container">
         <div class="profile-container">
-            <!-- プロフィールヘッダー -->
             <div class="profile-header">
                 <div class="profile-avatar">
                     <span id="userInitial">U</span>
@@ -392,28 +443,38 @@
                     <a href="#" class="btn btn-outline">設定</a>
                 </div>
             </div>
-            
-            <!-- デジタルクローゼットセクション -->
-            <div class="closet-section">
-                <h2 class="section-title">デジタルクローゼット</h2>
-                <p class="closet-description">
-                    あなたのファッションアイテムをデジタル管理して、コーディネートを簡単に作成しましょう。
-                    手持ちのアイテムをアップロードして、パーソナルなファッションコレクションを構築できます。
-                </p>
-                <a href="#" id="closetBtn" class="btn btn-closet">
-                    <i class="fas fa-tshirt"></i>クローゼットを開く
-                </a>
+
+            <div class="profile-tabs">
+                <div class="tab-item active" data-tab="posts">投稿</div>
+                <div class="tab-item" data-tab="closet">デジタルクローゼット</div>
+                <div class="tab-item" data-tab="likes">いいね</div>
             </div>
-            
-            <!-- 投稿セクション -->
-            <h2 class="section-title">マイ投稿</h2>
-            <div class="posts-grid" id="userPostsGrid">
-                <!-- 投稿がない場合のメッセージ -->
-                <div class="empty-posts">
-                    <i class="fas fa-camera" style="font-size: 3rem; margin-bottom: 1rem; color: #ccc;"></i>
-                    <h3>まだ投稿がありません</h3>
-                    <p>右下の「+」ボタンから最初の投稿を作成しましょう！</p>
-                    <a href="post.html" class="btn" style="margin-top: 1rem;">投稿する</a>
+
+            <div class="tab-content-container">
+                <div id="likes" class="tab-content">
+                    <div class="empty-posts">
+                        <h3>「いいね！」した投稿はまだありません</h3>
+                        <p>気になる投稿に「いいね！」してみましょう！</p>
+                    </div>
+                </div>
+            </div>
+
+            <p>気になる投稿に「いいね！」してみましょう！</p>
+        </div>
+    </div>
+</div>
+
+                <div id="closet" class="tab-content">
+                    <div class="closet-section">
+                        <h2 class="section-title">デジタルクローゼット</h2>
+                        <p class="closet-description">
+                            あなたのファッションアイテムをデジタル管理して、コーディネートを簡単に作成しましょう。
+                            手持ちのアイテムをアップロードして、パーソナルなファッションコレクションを構築できます。
+                        </p>
+                        <a href="#" id="closetBtn" class="btn btn-closet">
+                            <i class="fas fa-tshirt"></i>クローゼットを開く
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -443,45 +504,51 @@
             
             // ローカルストレージから投稿データを取得して表示する
             loadUserPosts();
+
+            // ▼▼▼ タブ切り替えの処理 ▼▼▼
+            const tabs = document.querySelectorAll('.tab-item');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 1. 全てのタブとコンテンツから 'active' クラスを一旦削除
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // 2. クリックされたタブに 'active' クラスを追加
+                    tab.classList.add('active');
+
+                    // 3. クリックされたタブに対応するコンテンツを表示
+                    const targetContentId = tab.dataset.tab;
+                    document.getElementById(targetContentId).classList.add('active');
+                });
+            });
         });
         
-        // ユーザー情報表示関数
         function displayUserInfo() {
-            // ユーザー名の設定（実際のアプリでは認証システムからユーザー情報を取得）
             const username = "ユーザー";
             document.getElementById('userName').textContent = username;
-            
-            // ユーザーハンドルの設定
             const handle = username.toLowerCase();
             document.getElementById('userHandle').textContent = `@${handle}`;
-            
-            // プロフィール画像のイニシャル設定
             document.getElementById('userInitial').textContent = username.charAt(0);
         }
         
-        // ローカルストレージから投稿を読み込む関数
         function loadUserPosts() {
-            // ローカルストレージから投稿データを取得
             const posts = JSON.parse(localStorage.getItem('userPosts')) || [];
             const postsGrid = document.getElementById('userPostsGrid');
             
-            // 投稿がある場合は「投稿がありません」メッセージを削除
             if (posts.length > 0) {
                 postsGrid.innerHTML = '';
-                
-                // 投稿を表示
                 posts.forEach(post => {
                     createPostElement(post, postsGrid);
                 });
             }
         }
         
-        // 投稿要素を作成する関数
         function createPostElement(post, container) {
             const postElement = document.createElement('div');
             postElement.className = 'post-item';
             
-            // 投稿日の表示形式を変更
             const postDate = new Date(post.date);
             const formattedDate = postDate.toLocaleDateString('ja-JP', {
                 year: 'numeric', 
@@ -489,7 +556,6 @@
                 day: 'numeric'
             });
             
-            // タグのHTML生成
             const tagsHtml = post.tags ? post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('') : '';
             
             postElement.innerHTML = `
@@ -498,27 +564,15 @@
                     <div class="post-date">${formattedDate}</div>
                     <h3 class="post-title">${post.title}</h3>
                     <p class="post-description">${post.description}</p>
-                    <div class="post-tags">
-                        ${tagsHtml}
-                    </div>
+                    <div class="post-tags">${tagsHtml}</div>
                     <div class="post-actions">
-                        <div class="post-action">
-                            <i class="fas fa-heart"></i>
-                            <span>${post.likes || 0}</span>
-                        </div>
-                        <div class="post-action">
-                            <i class="fas fa-comment"></i>
-                            <span>${post.comments ? post.comments.length : 0}</span>
-                        </div>
-                        <div class="post-action add-to-closet">
-                            <i class="fas fa-tshirt"></i>
-                            <span>クローゼットに追加</span>
-                        </div>
+                        <div class="post-action"><i class="fas fa-heart"></i> <span>${post.likes || 0}</span></div>
+                        <div class="post-action"><i class="fas fa-comment"></i> <span>${post.comments ? post.comments.length : 0}</span></div>
+                        <div class="post-action add-to-closet"><i class="fas fa-tshirt"></i> <span>クローゼットに追加</span></div>
                     </div>
                 </div>
             `;
             
-            // 「クローゼットに追加」ボタンのイベントリスナー
             postElement.querySelector('.add-to-closet').addEventListener('click', function() {
                 alert(`「${post.title}」をデジタルクローゼットに追加しました！`);
             });
