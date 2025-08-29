@@ -19,14 +19,15 @@
         <nav>
             <a href="/../../public/home.php">ホーム</a>
             <?php if (is_logged_in()): ?>
-                <a href="/../../public/post/post.php">投稿する</a>
-                <a href="/../../public/mypage/closet.php">デジタルクローゼット</a>
-                <a href="/../../public/mypage/mypage.php">マイページ</a>
-                <a href="/../../public/auth/logout.php">ログアウト</a>
+                <a href="/../public/post/post.php">投稿する</a>
+                <a href="/../public/mypage/closet.php">デジタルクローゼット</a>
+                <a href="/../public/mypage/mypage.php">マイページ</a>
+                <a href="/../public/auth/logout.php">ログアウト</a>
             <?php else: ?>
-                <a href="/../../public/auth/login.php">ログイン</a>
-                <a href="/../../public/auth/register.php">新規登録</a>
+                <a href="/../public/auth/login.php">ログイン</a>
+                <a href="/../public/auth/register.php">新規登録</a>
             <?php endif; ?>
         </nav>
     </header>
     <main>
+
