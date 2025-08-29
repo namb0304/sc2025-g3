@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイクローゼット - ファッション共有サイト</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #eef2f8;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+            --light-text: #777;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --purple-color: #6c5ce7;
+            --purple-light: #f1effe;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f8f9fa;
+            padding: 0;
+            margin: 0;
+        }
+        
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-item {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem;
+            transition: color 0.3s;
+        }
+        
+        .nav-item:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .ai-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #7e57c2;
+        }
+        
+        .ai-nav-item i {
+            font-size: 1.1rem;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--purple-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .page-title i {
+            font-size: 1.8rem;
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            background-color: #3a5985;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-purple {
+            background-color: var(--purple-color);
+        }
+        
+        .btn-purple:hover {
+            background-color: #5549c0;
+        }
+        
+        .closet-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+        }
+        
+        .closet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .closet-header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .closet-stats {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .closet-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--purple-color);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--light-text);
+        }
+        
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter:hover, .filter.active {
+            background-color: var(--purple-light);
+            border-color: var(--purple-color);
+            color: var(--purple-color);
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--purple-color);
+            box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--light-text);
+        }
+        
+        .closet-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .closet-item {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            border: 1px solid #eee;
+        }
+        
+        .closet-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .closet-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .closet-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .closet-info {
+            padding: 1rem;
+        }
+        
+        .closet-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--text-color);
+        }
+        
+        .closet-category {
+            font-size: 0.9rem;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .closet-category i {
+            font-size: 0.8rem;
+        }
+        
+        .closet-actions {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .closet-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+        }
+        
+        .closet-action:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .closet-action i {
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+        
+        .closet-edit i {
+            color: var(--primary-color);
+        }
+        
+        .closet-delete i {
+            color: var(--accent-color);
+        }
+        
+        .add-item-button {
+            height: 100%;
+            min-height: 200px;
+            border: 2px dashed #ccc;
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        
+        .add-item-button:hover {
+            border-color: var(--purple-color);
+            background-color: var(--purple-light);
+        }
+        
+        .add-item-button i {
+            font-size: 2.5rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+            transition: color 0.3s;
+        }
+        
+        .add-item-button:hover i {
+            color: var(--purple-color);
+        }
+        
+        .add-item-text {
+            color: var(--light-text);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .add-item-button:hover .add-item-text {
+            color: var(--purple-color);
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--light-text);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: var(--purple-color);
+        }
+        
+        .empty-closet {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .empty-closet i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-closet h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .empty-closet p {
+            color: var(--light-text);
+            max-width: 400px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        @media (max-width: 900px) {
+            .closet-stats {
+                flex-wrap: wrap;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .header-container {
+                padding: 1rem;
+            }
+            
+            .main-container {
+                margin: 1rem auto;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .closet-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .closet-items {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .closet-container {
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">ファッション共有サイト</a>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">みんなの投稿</a>
+                <a href="#" class="nav-item ai-nav-item"><i class="fas fa-robot"></i>AI</a>
+                <a href="mypage.html" class="nav-item">マイページ</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <a href="mypage.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> マイページに戻る
+        </a>
+        
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-tshirt"></i> マイクローゼット
+            </h1>
+            <a href="add_item.html" class="btn btn-purple">
+                <i class="fas fa-plus"></i>新しい服を登録
+            </a>
+        </div>
+        
+        <div class="closet-container">
+            <div class="closet-header">
+                <h2 class="closet-header-title">
+                    <i class="fas fa-hanger"></i> 登録済みアイテム一覧
+                </h2>
+                <div class="closet-stats">
+                    <div class="closet-stat">
+                        <div class="stat-value" id="totalItems">0</div>
+                        <div class="stat-label">アイテム</div>
+                    </div>
+                    <div class="closet-stat">
+                        <div class="stat-value" id="totalCategories">0</div>
+                        <div class="stat-label">カテゴリ</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filters">
+                <div class="filter active" data-category="all">すべて</div>
+                <div class="filter" data-category="トップス">トップス</div>
+                <div class="filter" data-category="ボトムス">ボトムス</div>
+                <div class="filter" data-category="アウター">アウター</div>
+                <div class="filter" data-category="シューズ">シューズ</div>
+                <div class="filter" data-category="バッグ">バッグ</div>
+                <div class="filter" data-category="アクセサリー">アクセサリー</div>
+            </div>
+            
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="アイテムを検索...">
+            </div>
+            
+            <div class="closet-items" id="closetItems">
+                <!-- 「服を登録」ボタン -->
+                <a href="add_item.html" class="add-item-button">
+                    <i class="fas fa-plus"></i>
+                    <span class="add-item-text">新しい服を登録</span>
+                </a>
+                
+                <!-- JavaScriptで動的に表示 または 初期表示 -->
+                <div class="empty-closet" id="emptyCloset">
+                    <i class="fas fa-tshirt"></i>
+                    <h3>クローゼットが空です</h3>
+                    <p>「新しい服を登録」ボタンからあなたの服をクローゼットに追加しましょう！</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // AIタブクリック時の処理
+            const aiTab = document.querySelector('.ai-nav-item');
+            aiTab.addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('AIスタイリング機能は準備中です。お楽しみに！');
+            });
+            
+            // クローゼットアイテムの読み込みと表示
+            loadClosetItems();
+            
+            // フィルターの処理
+            const filters = document.querySelectorAll('.filter');
+            filters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    // アクティブクラスの切り替え
+                    filters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 選択されたカテゴリでフィルタリング
+                    const category = this.getAttribute('data-category');
+                    filterItems(category);
+                });
+            });
+            
+            // 検索機能
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function() {
+                const searchText = this.value.trim().toLowerCase();
+                searchItems(searchText);
+            });
+        });
+        
+        // クローゼットアイテムの読み込み
+        function loadClosetItems() {
+            // ローカルストレージからデータを取得
+            const closetItems = JSON.parse(localStorage.getItem('closetItems')) || [];
+            const closetItemsContainer = document.getElementById('closetItems');
+            const emptyCloset = document.getElementById('emptyCloset');
+            
+            // 統計情報の更新
+            updateStats(closetItems);
+            
+            // アイテムがない場合
+            if (closetItems.length === 0) {
+                emptyCloset.style.display = 'block';
+                return;
+            } else {
+                emptyCloset.style.display = 'none';
+            }
+            
+            // 既存のアイテム（追加ボタン以外）をクリア
+            const existingItems = closetItemsContainer.querySelectorAll('.closet-item');
+            existingItems.forEach(item => item.remove());
+            
+            // アイテムを追加
+            closetItems.forEach(item => {
+                const itemElement = createItemElement(item);
+                // 追加ボタンの後に挿入
+                closetItemsContainer.insertBefore(itemElement, closetItemsContainer.children[1]);
+            });
+        }
+        
+        // アイテム要素の作成
+        function createItemElement(item) {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'closet-item';
+            itemElement.setAttribute('data-category', item.category);
+            
+            itemElement.innerHTML = `
+                <div class="closet-image">
+                    <img src="${item.image}" alt="${item.name}">
+                </div>
+                <div class="closet-info">
+                    <h4 class="closet-name">${item.name}</h4>
+                    <div class="closet-category">
+                        <i class="fas fa-tag"></i> ${item.category}${item.brand ? ` | ${item.brand}` : ''}
+                    </div>
+                </div>
+                <div class="closet-actions">
+                    <div class="closet-action closet-edit" data-id="${item.id}">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div class="closet-action closet-delete" data-id="${item.id}">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                </div>
+            `;
+            
+            // 編集ボタンのイベントリスナー
+            itemElement.querySelector('.closet-edit').addEventListener('click', function() {
+                const itemId = this.getAttribute('data-id');
+                alert(`アイテム ID: ${itemId} の編集画面へ移動します`);
+                // 実際の実装では編集ページへのリダイレクト
+                // window.location.href = `edit_item.html?id=${itemId}`;
+            });
+            
+            // 削除ボタンのイベントリスナー
+            itemElement.querySelector('.closet-delete').addEventListener('click', function() {
+                const itemId = this.getAttribute('data-id');
+                if (confirm('このアイテムを削除しますか？')) {
+                    deleteItem(itemId);
+                }
+            });
+            
+            return itemElement;
+        }
+        
+        // アイテムの削除
+        function deleteItem(itemId) {
+            // ローカルストレージから現在のアイテムを取得
+            let closetItems = JSON.parse(localStorage.getItem('closetItems')) || [];
+            
+            // IDに一致するアイテムを除外
+            closetItems = closetItems.filter(item => item.id !== itemId);
+            
+            // 更新したデータを保存
+            localStorage.setItem('closetItems', JSON.stringify(closetItems));
+            
+            // 画面を更新
+            loadClosetItems();
+            
+            alert('アイテムを削除しました');
+        }
+        
+        // カテゴリでフィルタリング
+        function filterItems(category) {
+            const allItems = document.querySelectorAll('.closet-item');
+            const emptyCloset = document.getElementById('emptyCloset');
+            
+            // 「すべて」カテゴリの場合
+            if (category === 'all') {
+                allItems.forEach(item => {
+                    item.style.display = 'block';
+                });
+                
+                // 表示されるアイテムがあるか確認
+                const hasVisibleItems = document.querySelectorAll('.closet-item').length > 0;
+                emptyCloset.style.display = hasVisibleItems ? 'none' : 'block';
+                return;
+            }
+            
+            // 特定カテゴリのアイテムだけ表示
+            let hasVisibleItems = false;
+            allItems.forEach(item => {
+                if (item.getAttribute('data-category') === category) {
+                    item.style.display = 'block';
+                    hasVisibleItems = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // 表示するアイテムがない場合
+            emptyCloset.style.display = hasVisibleItems ? 'none' : 'block';
+        }
+        
+        // アイテム検索
+        function searchItems(searchText) {
+            const allItems = document.querySelectorAll('.closet-item');
+            const emptyCloset = document.getElementById('emptyCloset');
+            
+            // 検索テキストが空の場合
+            if (!searchText) {
+                // 現在アクティブなフィルターを適用
+                const activeFilter = document.querySelector('.filter.active');
+                filterItems(activeFilter.getAttribute('data-category'));
+                return;
+            }
+            
+            // 検索テキストに一致するアイテムだけ表示
+            let hasVisibleItems = false;
+            allItems.forEach(item => {
+                const itemName = item.querySelector('.closet-name').textContent.toLowerCase();
+                const itemCategory = item.querySelector('.closet-category').textContent.toLowerCase();
+                
+                if (itemName.includes(searchText) || itemCategory.includes(searchText)) {
+                    item.style.display = 'block';
+                    hasVisibleItems = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // 表示するアイテムがない場合
+            emptyCloset.style.display = hasVisibleItems ? 'none' : 'block';
+        }
+        
+        // 統計情報の更新
+        function updateStats(items) {
+            document.getElementById('totalItems').textContent = items.length;
+            
+            // カテゴリの種類数をカウント
+            const categories = new Set();
+            items.forEach(item => {
+                if (item.category) {
+                    categories.add(item.category);
+                }
+            });
+            document.getElementById('totalCategories').textContent = categories.size;
+        }
+    </script>
+</body>
+</html>
