@@ -1,5 +1,5 @@
 <?php
-require_once 'helpers.php';
+require_once '../src/helpers.php';
 
 $posts = load_data('posts');
 $search_query = $_GET['search'] ?? '';
@@ -11,7 +11,7 @@ if ($search_query) {
 }
 ?>
 
-<?php include 'templates/header.php'; ?>
+<?php include '/src/templates/header.php'; ?>
 <div class="container">
     <h2>みんなのコーディネート</h2>
     <form action="index.php" method="get">
@@ -37,4 +37,4 @@ if ($search_query) {
         <?php endif; ?>
     </div>
 </div>
-<?php include 'templates/footer.php'; ?>
+<?php include '/src/templates/footer.php'; ?>

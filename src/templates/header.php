@@ -11,21 +11,21 @@
 <head>
     <meta charset="UTF-8">
     <title>AI Fashion Coordinator</title>
-    <link rel="stylesheet" href="/style.css"> 
+    <link rel="stylesheet" href="public/style.css"> 
 </head>
 <body>
     <header>
-        <h1><a href="/">AI Fashion Coordinator</a></h1>
+        <h1><a href="/../../public/home.php">AI Fashion Coordinator</a></h1>
         <nav>
-            <a href="/">ホーム</a>
+            <a href="/../../public/home.php">ホーム</a>
             <?php if (is_logged_in()): ?>
-                <a href="/post/create.php">投稿する</a>
-                <a href="/mypage/closet.php">クローゼット</a>
-                <a href="/mypage/mypage.php">マイページ</a>
-                <a href="/auth/logout.php">ログアウト</a>
+                <a href="/../../public/post/post.php">投稿する</a>
+                <a href="/../../public/mypage/closet.php">デジタルクローゼット</a>
+                <a href="/../../public/mypage/mypage.php">マイページ</a>
+                <a href="/../../public/auth/logout.php">ログアウト</a>
             <?php else: ?>
-                <a href="/auth/login.php">ログイン</a>
-                <a href="/auth/register.php">新規登録</a>
+                <a href="/../../public/auth/login.php">ログイン</a>
+                <a href="/../../public/auth/register.php">新規登録</a>
             <?php endif; ?>
         </nav>
     </header>

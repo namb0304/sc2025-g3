@@ -2,7 +2,7 @@
 // sc2025-g3/public/mypage/mypage.php
 
 // ★ 変更点: パスを修正
-require_once __DIR__ . '/../../src/helpers.php';
+require_once '../../src/helpers.php';
 login_check();
 
 $suggestion_html = '';
@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['get_suggestion'])) {
         ];
         
         // ★ 変更点: Pythonスクリプトへのパスを修正
+        // 間違い
         $command = "python3 " . __DIR__ . "/../../cgi-bin/suggest_coord.py";
         $descriptorspec = [ 0 => ["pipe", "r"], 1 => ["pipe", "w"], 2 => ["pipe", "w"] ];
         $process = proc_open($command, $descriptorspec, $pipes);

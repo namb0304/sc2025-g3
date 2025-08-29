@@ -1,5 +1,5 @@
 <?php
-require_once 'helpers.php';
+require_once __DIR__ . '/../../src/helpers.php';
 $posts = load_data('posts');
 $post_id = $_GET['id'] ?? '';
 $current_post = null;
@@ -30,7 +30,7 @@ if (is_logged_in() && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['com
 }
 ?>
 
-<?php include 'templates/header.php'; ?>
+<?php include 'src/templates/header.php'; ?>
 <div class="container">
     <div class="post-full">
         <h2><?= htmlspecialchars($current_post['title']) ?></h2>
@@ -49,7 +49,7 @@ if (is_logged_in() && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['com
                 <button type="submit">コメントする</button>
             </form>
         <?php else: ?>
-            <p><a href="/login.php">ログイン</a>してコメントに参加しませんか？</p>
+            <p><a href="/auth/login.php">ログイン</a>してコメントに参加しませんか？</p>
         <?php endif; ?>
 
         <ul>

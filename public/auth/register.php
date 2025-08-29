@@ -1,5 +1,5 @@
 <?php
-require_once 'helpers.php';
+require_once __DIR__ . '/../../src/helpers.php';
 
 $error = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

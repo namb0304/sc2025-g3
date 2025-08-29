@@ -1,5 +1,5 @@
 <?php
-require_once 'helpers.php';
+require_once __DIR__ . '/../../src/helpers.php';
 login_check();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<?php include 'templates/header.php'; ?>
+<?php include '/src/templates/header.php'; ?>
 <div class="container">
     <h2>コーディネートを投稿する</h2>
     <form action="post.php" method="post" enctype="multipart/form-data">
@@ -52,4 +52,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">投稿する</button>
     </form>
 </div>
-<?php include 'templates/footer.php'; ?>
+<?php include '/src/templates/footer.php'; ?>

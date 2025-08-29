@@ -7,7 +7,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // データディレクトリのパスを定義
-// ★ 変更点: `src`ディレクトリから一つ上の階層の`data`を指すように修正
+
 define('DATA_DIR', __DIR__ . '/../data/');
 
 /**
@@ -79,7 +79,7 @@ function is_logged_in() {
 function login_check() {
     if (!is_logged_in()) {
         // ★ 変更点: パスを絶対パスに修正
-        header('Location: /auth/login.php');
+        header('Location: ../public/auth/login.php');
         exit;
     }
 }
