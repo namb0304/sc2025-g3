@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新しい服を登録 - ファッション共有サイト</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #eef2f8;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+            --light-text: #777;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --purple-color: #6c5ce7;
+            --purple-light: #f1effe;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f8f9fa;
+            padding: 0;
+            margin: 0;
+        }
+        
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-item {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem;
+            transition: color 0.3s;
+        }
+        
+        .nav-item:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .ai-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #7e57c2;
+        }
+        
+        .ai-nav-item i {
+            font-size: 1.1rem;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--purple-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            background-color: #3a5985;
+        }
+        
+        .btn-purple {
+            background-color: var(--purple-color);
+            width: 100%;
+        }
+        
+        .btn-purple:hover {
+            background-color: #5549c0;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--light-text);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: var(--purple-color);
+        }
+        
+        /* フォーム関連のスタイル */
+        .form-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .form-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            color: var(--purple-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            gap: 0.5rem;
+        }
+        
+        .form-row {
+            margin-bottom: 1.5rem;
+        }
+        
+        .label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .input, .select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .input:focus, .select:focus {
+            outline: none;
+            border-color: var(--purple-color);
+            box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 280px;
+            border: 2px dashed #ddd;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        
+        .image-preview:hover {
+            border-color: var(--purple-color);
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            display: none;
+        }
+        
+        .image-placeholder {
+            text-align: center;
+            color: var(--light-text);
+        }
+        
+        .image-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-row.two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 600px) {
+            .form-row.two-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">ファッション共有サイト</a>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">みんなの投稿</a>
+                <a href="#" class="nav-item ai-nav-item"><i class="fas fa-robot"></i>AI</a>
+                <a href="mypage.html" class="nav-item">マイページ</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <a href="closet.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> クローゼットに戻る
+        </a>
+        
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-tshirt"></i> 新しい服を登録
+            </h1>
+        </div>
+        
+        <div class="form-container">
+            <div class="form-header">
+                <i class="fas fa-plus-circle"></i> アイテム情報を入力
+            </div>
+            
+            <form id="addItemForm">
+                <div class="form-row">
+                    <label for="itemType" class="label">アイテム名:</label>
+                    <input type="text" id="itemType" class="input" list="itemTypeList" placeholder="例: 白いTシャツ、デニムジャケット..." required>
+                    <datalist id="itemTypeList">
+                        <option value="Tシャツ">
+                        <option value="シャツ">
+                        <option value="セーター">
+                        <option value="カーディガン">
+                        <option value="ジャケット">
+                        <option value="コート">
+                        <option value="ジーンズ">
+                        <option value="パンツ">
+                        <option value="スカート">
+                        <option value="ワンピース">
+                        <option value="スニーカー">
+                        <option value="ブーツ">
+                        <option value="サンダル">
+                        <option value="バッグ">
+                        <option value="アクセサリー">
+                    </datalist>
+                </div>
+                
+                <div class="form-row.two-columns">
+                    <div class="form-row">
+                        <label for="category" class="label">カテゴリー:</label>
+                        <select id="category" class="select" required>
+                            <option value="">カテゴリーを選択</option>
+                            <option value="トップス">トップス</option>
+                            <option value="ボトムス">ボトムス</option>
+                            <option value="アウター">アウター</option>
+                            <option value="ワンピース">ワンピース</option>
+                            <option value="シューズ">シューズ</option>
+                            <option value="バッグ">バッグ</option>
+                            <option value="アクセサリー">アクセサリー</option>
+                        </select>
+                    </div>
+                    
+                </div>
+                
+                <div class="form-row">
+                    <label for="itemImage" class="label">写真:</label>
+                    <div class="image-preview" id="imagePreview">
+                        <img src="" alt="画像プレビュー" id="previewImage">
+                        <div class="image-placeholder" id="imagePlaceholder">
+                            <i class="fas fa-camera"></i>
+                            <p>クリックして画像を選択</p>
+                        </div>
+                    </div>
+                    <input type="file" id="itemImage" accept="image/*" required style="display: none;">
+                </div>
+                
+                
+                <div class="form-row">
+                    <button type="submit" class="btn btn-purple">
+                        <i class="fas fa-save"></i> アイテムを保存
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // AIタブクリック時の処理
+            const aiTab = document.querySelector('.ai-nav-item');
+            aiTab.addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('AIスタイリング機能は準備中です。お楽しみに！');
+            });
+            
+            // 画像プレビュー領域クリックでファイル選択を起動
+            const imagePreview = document.getElementById('imagePreview');
+            const itemImage = document.getElementById('itemImage');
+            
+            imagePreview.addEventListener('click', function() {
+                itemImage.click();
+            });
+            
+            // 写真のプレビュー表示
+            itemImage.addEventListener('change', function(e) {
+                const preview = document.getElementById('previewImage');
+                const placeholder = document.getElementById('imagePlaceholder');
+                const file = e.target.files[0];
+                
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        placeholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
+                    placeholder.style.display = 'block';
+                }
+            });
+            
+            // アイテム追加処理
+            document.getElementById('addItemForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // フォームから値を取得
+                const type = document.getElementById('itemType').value;
+                const category = document.getElementById('category').value;
+                const brand = document.getElementById('brand').value;
+                const memo = document.getElementById('memo').value;
+                const imageInput = document.getElementById('itemImage');
+                
+                if (!imageInput.files || !imageInput.files[0]) {
+                    alert('写真を選択してください');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+                    
+                    const newItem = {
+                        id: Date.now().toString(),
+                        name: type,
+                        category: category,
+                        brand: brand,
+                        memo: memo,
+                        image: imageData,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    let items = JSON.parse(localStorage.getItem('closetItems')) || [];
+                    items.push(newItem);
+                    localStorage.setItem('closetItems', JSON.stringify(items));
+                    
+                    alert('アイテムが追加されました！');
+                    
+                    // クローゼットページに戻る
+                    window.location.href = 'closet.html';
+                };
+                
+                reader.readAsDataURL(imageInput.files[0]);
+            });
+        });
+    </script>
+</body>
+</html>
