@@ -1,0 +1,28 @@
+[
+    {
+        "id": "68b18e0a9def5",
+        "user_id": 2,
+        "username": "aaa",
+        "title": "test",
+        "description": "Intel入ってる",
+        "post_image": "\/uploads\/aaa\/posts\/1756466698_Intel-Core-Ultra-200V-Series-3.jpg",
+        "comments": [],
+        "likes": 0
+    },
+    {
+        "id": "68b18e528f0d9",
+        "user_id": 2,
+        "username": "aaa",
+        "title": "test",
+        "description": "intel入ってる",
+        "post_image": "\/uploads\/aaa\/posts\/1756466770_Intel-Core-Ultra-200V-Series-3.jpg",
+        "comments": [
+            {
+                "username": "aaa",
+                "text": "ｌｋｌｋｋｋｋ",
+                "timestamp": "2025-08-29 20:26:21"
+            }
+        ],
+        "likes": 0
+    }
+]

@@ -1,0 +1,36 @@
+[
+    {
+        "id": "68b18e9d158fa",
+        "user_id": 2,
+        "image_path": "\/uploads\/aaa\/closet\/1756466845_Intel-Core-Ultra-200V-Series-3.jpg",
+        "tags": {
+            "category": "アウター",
+            "color": "#ab1ce8",
+            "season": [
+                "秋",
+                "冬"
+            ],
+            "style_tags": [
+                "ストリート",
+                "フェミニン"
+            ]
+        }
+    },
+    {
+        "id": "68b18ea5972f7",
+        "user_id": 2,
+        "image_path": "\/uploads\/aaa\/closet\/1756466853_Intel-Core-Ultra-200V-Series-3.jpg",
+        "tags": {
+            "category": "アウター",
+            "color": "#c4166a",
+            "season": [
+                "春",
+                "秋"
+            ],
+            "style_tags": [
+                "フェミニン",
+                "ストリート"
+            ]
+        }
+    }
+]
