@@ -5,11 +5,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helv
 a { color: #007bff; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* Header */
-header { background-color: #fff; color: #333; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e9ecef; }
-header h1 { margin: 0; font-size: 24px; }
-header h1 a { color: #333; }
-nav a { color: #555; margin: 0 15px; font-weight: 500; }
 
 /* Footer */
 footer { text-align: center; padding: 20px; color: #888; font-size: 14px; }
@@ -381,4 +376,91 @@ hr {
     border: none;
     border-top: 1px solid #eee;
     margin: 3rem 0;
+}
+/* ======== style.css のヘッダー部分をこれに置き換え ======== */
+
+/* --- 新しい3分割ヘッダーのデザイン --- */
+.site-header {
+    background: linear-gradient(135deg, #4a6fa5 0%, #1e3c72 100%);
+    color: white;
+    padding: 1.2rem 0; /* 少し高さを出す */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px; /* ← ここの値をさらに小さくしました */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Part 1: 左側 */
+.header-left .logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    /* margin-right: auto; を削除するか、コメントアウト */
+}
+
+/* ======== style.css のヘッダー中央部分をこれに置き換え ======== */
+
+/* Part 2: 中央 */
+.header-center {
+    display: flex;
+    gap: 2.5rem;
+}
+.header-center .nav-item {
+    color: #f0f0f0;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem; /* パディングを最初からつけておく */
+    position: relative;
+    transition: all 0.3s ease;
+    border-radius: 8px; /* 角を丸くしておく */
+}
+.header-center .nav-item:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1); /* ホバー時にうっすら背景色 */
+}
+
+/* ★★★ここが修正の最重要ポイント★★★ */
+/* アクティブなタブ専用の、背景色と文字色がセットになったスタイル */
+.header-center .nav-item.nav-item--active {
+    background-color: #fff; /* 背景を白に */
+    color: #1e3c72;      /* 文字色を濃い青に */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* ホバー時の下線アニメーションは不要になるので削除 */
+
+
+/* Part 3: 右側 */
+.header-right .user-welcome {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+/* 左右の幅をある程度確保するための空の要素 */
+.header-right .placeholder {
+    width: 1px; /* 幅はほぼなくても良い */
+}
+
+/* メインコンテンツの開始位置を調整 */
+main.container {
+    padding-top: 2rem;
 }
