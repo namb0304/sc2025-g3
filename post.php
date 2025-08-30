@@ -1,8 +1,6 @@
 <?php
 require_once 'helpers.php';
 login_check();
-
-// header.php を使う代わりにこのファイルで完結させます
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -10,36 +8,21 @@ login_check();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>投稿方法の選択 - ファッション共有サイト</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* 参考デザインから持ってきた基本スタイル */
-        :root {
-            --primary-color: #4a6fa5;
-            --secondary-color: #eef2f8;
-            --text-color: #333;
-            --light-text: #777;
-            --border-radius: 12px;
-            --box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: var(--text-color); background-color: #f8f9fa; }
-        a { text-decoration: none; color: inherit; }
+    </head>
+<body>
 
-        /* サイト共通のヘッダー */
-        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
-        .nav-menu { display: flex; gap: 2rem; }
-        .nav-item { font-weight: 500; }
-        
-        /* このページ専用のレイアウトとデザイン */
+    <?php include 'templates/header.php'; ?>
+
+    <style>
+        /* post.php 専用のスタイル */
         .main-container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; text-align: center; }
         .page-header { margin-bottom: 2.5rem; }
-        .page-title { font-size: 2rem; font-weight: 700; color: var(--primary-color); display: inline-flex; align-items: center; gap: 0.75rem; }
-        .page-subtitle { color: var(--light-text); font-size: 1.1rem; }
+        .page-title { font-size: 2rem; font-weight: 700; color: #4a6fa5; display: inline-flex; align-items: center; gap: 0.75rem; }
+        .page-subtitle { color: #777; font-size: 1.1rem; }
 
         .post-options-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* レスポンシブ対応 */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
         .option-card {
@@ -48,9 +31,11 @@ login_check();
             text-align: left;
             padding: 2rem;
             background: #fff;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: inherit;
         }
         .option-card:hover {
             transform: translateY(-8px);
@@ -59,11 +44,11 @@ login_check();
         
         .option-card .icon {
             font-size: 2.5rem;
-            color: var(--primary-color);
+            color: #4a6fa5;
             margin-bottom: 1rem;
             width: 60px;
             height: 60px;
-            background-color: var(--secondary-color);
+            background-color: #eef2f8;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -76,23 +61,18 @@ login_check();
         }
         
         .option-card p {
-            color: var(--light-text);
-            flex-grow: 1; /* pタグを伸ばして高さを揃える */
+            color: #777;
+            flex-grow: 1;
         }
 
         .option-card .arrow {
             text-align: right;
             font-size: 1.2rem;
-            color: var(--primary-color);
+            color: #4a6fa5;
             margin-top: 1.5rem;
         }
-
     </style>
-</head>
-<body>
-
-    <?php include 'templates/header.php'; ?>
-
+    
     <div class="main-container">
         <div class="page-header">
             <h1 class="page-title"><i class="fas fa-paper-plane"></i> コーディネートを投稿する</h1>
