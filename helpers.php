@@ -54,6 +54,9 @@ function find_closet_item_by_id($item_id, $user_id = null) {
     return $stmt->fetch();
 }
 
+/**
+ * 画像データをデータベースに直接保存し、作成されたアイテムのIDを返す関数
+ */
 function create_closet_item_in_db($user_id, $image_data, $mime_type, $category, $genres, $notes) {
     $pdo = get_db_connection();
     $genres_pg_array = '{' . implode(',', array_map('trim', $genres)) . '}';
@@ -61,13 +64,19 @@ function create_closet_item_in_db($user_id, $image_data, $mime_type, $category, 
         'INSERT INTO closet_items (user_id, image_data, mime_type, category, genres, notes) VALUES (?, ?, ?, ?, ?, ?)'
     );
     $stmt->bindParam(1, $user_id);
-    $stmt->bindParam(2, $image_data, PDO::PARAM_LOB); // バイナリデータとして扱う
+    $stmt->bindParam(2, $image_data, PDO::PARAM_LOB);
     $stmt->bindParam(3, $mime_type);
     $stmt->bindParam(4, $category);
     $stmt->bindParam(5, $genres_pg_array);
     $stmt->bindParam(6, $notes);
     
-    return $stmt->execute();
+    // 実行に成功したら、最後に挿入された行のIDを返す
+    if ($stmt->execute()) {
+        // 'closet_items_id_seq' はPostgreSQLが自動で作るシーケンス名です
+        return $pdo->lastInsertId('closet_items_id_seq');
+    } else {
+        return false;
+    }
 }
 
 function get_image_data_by_item_id($item_id) {
