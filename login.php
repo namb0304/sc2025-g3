@@ -3,21 +3,19 @@ require_once 'helpers.php';
 
 $error = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $users = load_data('users');
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    if (!empty($users)) {
-        foreach ($users as $user) {
-            if ($user['username'] === $username && password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                header('Location: ' . BASE_URL . '/index.php');
-                exit;
-            }
-        }
+    $user = find_user_by_username($username);
+
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+        header('Location: ' . BASE_URL . '/index.php');
+        exit;
+    } else {
+        $error = "ユーザー名またはパスワードが正しくありません。";
     }
-    $error = "ユーザー名またはパスワードが正しくありません。";
 }
 ?>
 <!DOCTYPE html>
@@ -31,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="container auth-container">
         <h2>ログイン</h2>
         <?php if($error): ?><p class="error"><?= htmlspecialchars($error) ?></p><?php endif; ?>
+        <?php if(isset($_GET['registered'])): ?><p class="message-box">ユーザー登録が完了しました。ログインしてください。</p><?php endif; ?>
         <form action="<?= BASE_URL ?>/login.php" method="post">
             <input type="text" name="username" placeholder="ユーザー名" required>
             <input type="password" name="password" placeholder="パスワード" required>
