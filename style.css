@@ -1,3 +1,4 @@
+/* (既存のスタイルは省略) */
 /* General */
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8f9fa; margin: 0; color: #333; }
 .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
@@ -52,3 +53,43 @@ form button:hover { background-color: #0056b3; }
 .selectable-item input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
 /* 選択されたアイテムのスタイル */
 .selectable-item input[type="radio"]:checked + img { border-color: #007bff; box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); }
+/* --- MyPage --- */
+.my-posts-list { display: flex; flex-direction: column; gap: 15px; }
+.my-post-item { display: flex; gap: 15px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.my-post-item img { width: 100px; height: 100px; object-fit: cover; border-radius: 5px; }
+.my-post-info { flex: 1; }
+.my-post-info h4 { margin: 0 0 5px 0; }
+.my-post-info p { margin: 0 0 10px 0; font-size: 14px; color: #555; }
+
+/* --- Post Detail --- */
+.post-actions { display: flex; gap: 10px; margin-top: 20px; }
+.post-actions button { background: #f0f0f0; border: 1px solid #ccc; padding: 8px 15px; border-radius: 20px; cursor: pointer; transition: all .2s ease; }
+.post-actions button.active { background: #007bff; color: white; border-color: #007bff; }
+
+/* --- Delete Buttons --- */
+.delete-button { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+.delete-button-small { background: none; border: none; color: #dc3545; cursor: pointer; font-size: 12px; padding: 5px; }
+
+/* --- Post Page Tabs --- */
+.tab-switcher { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 20px; }
+.tab-button { padding: 10px 20px; color: #555; text-decoration: none; border: none; background: none; }
+.tab-button.active { color: #007bff; border-bottom: 2px solid #007bff; font-weight: bold; }
+/* --- Post Detail Closet Info --- */
+.divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 25px 0;
+}
+.item-detail-container-small {
+    display: flex;
+    gap: 20px;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+.item-image-view-small { flex: 0 0 150px; }
+.item-image-view-small img { width: 100%; border-radius: 5px; }
+.item-info-view-small { flex: 1; }
+.item-info-view-small .info-group h4 { margin: 0 0 5px 0; font-size: 1em; }
+.item-info-view-small .info-group p { margin: 0; font-size: 0.9em; }

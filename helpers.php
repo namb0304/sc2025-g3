@@ -12,29 +12,19 @@ define('DATA_DIR', __DIR__ . '/data/');
 
 /**
  * JSONファイルを安全に読み込む関数
- * @param string $filename ファイル名 (拡張子なし)
- * @return array デコードされたデータ（失敗した場合は空配列）
  */
 function load_data($filename) {
     $file = DATA_DIR . $filename . '.json';
-    if (!file_exists($file)) {
-        return [];
-    }
+    if (!file_exists($file)) return [];
     $content = file_get_contents($file);
-    if (empty($content)) {
-        return [];
-    }
+    if (empty($content)) return [];
     $data = json_decode($content, true);
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        return []; 
-    }
+    if (json_last_error() !== JSON_ERROR_NONE) return [];
     return $data;
 }
 
 /**
  * データをJSONファイルに保存する関数
- * @param string $filename ファイル名 (拡張子なし)
- * @param array $data 保存するデータ
  */
 function save_data($filename, $data) {
     $file = DATA_DIR . $filename . '.json';
@@ -42,13 +32,11 @@ function save_data($filename, $data) {
 }
 
 /**
- * 配列の中からIDで特定の要素を検索する関数
- * @param array $data 検索対象の配列
- * @param string|int $id 検索するID
- * @return array|null 見つかった要素、またはnull
+ * 配列の中からIDで特定の要素を検索する関数 (堅牢版)
  */
 function find_by_id($data, $id) {
-    if (empty($data)) return null;
+    // データが配列でない、または空の場合はnullを返す
+    if (!is_array($data) || empty($data)) return null;
     foreach ($data as $item) {
         if (isset($item['id']) && $item['id'] == $id) {
             return $item;
@@ -58,8 +46,21 @@ function find_by_id($data, $id) {
 }
 
 /**
+ * 配列の中からIDで特定の要素のインデックス(添字)を検索する関数 (堅牢版)
+ */
+function find_index_by_id($data, $id) {
+    // データが配列でない、または空の場合はfalseを返す
+    if (!is_array($data) || empty($data)) return false;
+    foreach ($data as $index => $item) {
+        if (isset($item['id']) && $item['id'] == $id) {
+            return $index;
+        }
+    }
+    return false;
+}
+
+/**
  * ログイン状態をチェックする関数
- * @return bool ログインしていればtrue
  */
 function is_logged_in() {
     return isset($_SESSION['user_id']);
@@ -77,8 +78,6 @@ function login_check() {
 
 /**
  * ユーザーIDからユーザー情報を取得する関数
- * @param int $id ユーザーID
- * @return array|null ユーザー情報、またはnull
  */
 function get_user_by_id($id) {
     $users = load_data('users');

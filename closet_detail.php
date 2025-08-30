@@ -6,12 +6,14 @@ $closet_items = load_data('closet');
 $item_id = $_GET['id'] ?? '';
 $current_item = find_by_id($closet_items, $item_id);
 
-// アイテムが見つからない、または他人のアイテムの場合はエラー
 if (!$current_item || $current_item['user_id'] != $_SESSION['user_id']) {
     die('アイテムが見つかりません。');
 }
 
-$manual_tags = $current_item['manual_tags'];
+$manual_tags = $current_item['manual_tags'] ?? [];
+$category = $manual_tags['category'] ?? '未分類';
+$genres = $manual_tags['genres'] ?? [];
+$notes = $manual_tags['notes'] ?? '備考はありません。';
 ?>
 <?php include 'templates/header.php'; ?>
 <div class="container">
@@ -24,14 +26,14 @@ $manual_tags = $current_item['manual_tags'];
             
             <div class="info-group">
                 <h3>種類</h3>
-                <p><?= htmlspecialchars($manual_tags['category']) ?></p>
+                <p><?= htmlspecialchars($category) ?></p>
             </div>
 
             <div class="info-group">
                 <h3>ジャンル</h3>
-                <?php if (!empty($manual_tags['genres'])): ?>
+                <?php if (!empty($genres)): ?>
                     <div class="genre-tags">
-                        <?php foreach($manual_tags['genres'] as $genre): ?>
+                        <?php foreach($genres as $genre): ?>
                             <span class="tag"><?= htmlspecialchars($genre) ?></span>
                         <?php endforeach; ?>
                     </div>
@@ -42,25 +44,18 @@ $manual_tags = $current_item['manual_tags'];
 
             <div class="info-group">
                 <h3>備考</h3>
-                <p><?= nl2br(htmlspecialchars($manual_tags['notes'] ?: '備考はありません。')) ?></p>
+                <p><?= nl2br(htmlspecialchars($notes)) ?></p>
             </div>
-
-            <a href="<?= BASE_URL ?>/closet.php" class="back-link">クローゼットに戻る</a>
+            
+            <div class="item-actions-footer">
+                <a href="<?= BASE_URL ?>/closet.php" class="back-link">クローゼットに戻る</a>
+                <form action="<?= BASE_URL ?>/delete_handler.php" method="post" onsubmit="return confirm('本当にこのアイテムを削除しますか？\nこのアイテムを使った投稿は削除されません。');">
+                    <input type="hidden" name="type" value="closet_item">
+                    <input type="hidden" name="id" value="<?= $current_item['id'] ?>">
+                    <button type="submit" class="delete-button">このアイテムを削除</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
-<style>
-/* このページ専用のスタイル */
-.item-detail-container { display: flex; gap: 30px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-.item-image-view { flex: 1; }
-.item-image-view img { width: 100%; border-radius: 8px; }
-.item-info-view { flex: 1; }
-.info-group { margin-bottom: 20px; }
-.info-group h3 { margin: 0 0 5px 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px; }
-.genre-tags { display: flex; flex-wrap: wrap; gap: 10px; }
-.tag { background: #007bff; color: white; padding: 5px 12px; border-radius: 15px; font-size: 14px; }
-.back-link { display: inline-block; margin-top: 20px; color: #555; }
-</style>
-
 <?php include 'templates/footer.php'; ?>

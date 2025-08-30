@@ -73,5 +73,103 @@
             ],
             "notes": ""
         }
+    },
+    {
+        "id": "item_68b1bdda5def7",
+        "user_id": 1,
+        "image_path": "uploads\/s2222019@stu.musashino-u.ac.jp\/closet\/1756478938_1756473522_thumb-1548-3.jpg",
+        "manual_tags": {
+            "category": "その他",
+            "genres": [
+                "フェミニン"
+            ],
+            "notes": "ニット"
+        }
+    },
+    {
+        "id": "item_68b236641c3a0",
+        "user_id": 2,
+        "image_path": "uploads\/aaa\/closet\/1756509796_2024_Acer_Consumer_Option_01_3840x2400.jpg",
+        "manual_tags": {
+            "category": "アウター",
+            "genres": [
+                "ストリート"
+            ],
+            "notes": ""
+        }
+    },
+    {
+        "id": "item_68b2367b50bc1",
+        "user_id": 2,
+        "image_path": "uploads\/aaa\/closet\/1756509819_2024_Acer_Consumer_Option_01_3840x2400.jpg",
+        "manual_tags": {
+            "category": "アウター",
+            "genres": [
+                "ストリート"
+            ],
+            "notes": ""
+        }
+    },
+    {
+        "id": "item_68b237ecbd8e7",
+        "user_id": 2,
+        "image_path": "uploads\/aaa\/closet\/1756510188_2024_Acer_Consumer_Default_3840x2400.jpg",
+        "manual_tags": {
+            "category": "ボトムス",
+            "genres": [
+                "きれいめ"
+            ],
+            "notes": "；；；；"
+        }
+    },
+    {
+        "id": "item_68b23895bab87",
+        "user_id": 2,
+        "image_path": "uploads\/aaa\/closet\/1756510357_2024_Acer_Consumer_Default_3840x2400.jpg",
+        "manual_tags": {
+            "category": "ボトムス",
+            "genres": [
+                "きれいめ"
+            ],
+            "notes": "；；；；"
+        }
+    },
+    {
+        "id": "item_68b23b517e6d8",
+        "user_id": 1,
+        "image_path": "uploads\/s2222019@stu.musashino-u.ac.jp\/closet\/1756511057_2024_Acer_Consumer_Option_01_3840x2400.jpg",
+        "manual_tags": {
+            "category": "アウター",
+            "genres": [
+                "きれいめ",
+                "フェミニン",
+                "モード"
+            ],
+            "notes": "饅頭南部鉄器"
+        }
+    },
+    {
+        "id": "item_68b23d83b80f4",
+        "user_id": 3,
+        "image_path": "uploads\/yuki.s\/closet\/1756511619_images (1).jpeg",
+        "manual_tags": {
+            "category": "トップス",
+            "genres": [
+                "きれいめ"
+            ],
+            "notes": "イケおじ"
+        }
+    },
+    {
+        "id": "item_68b248e770345",
+        "user_id": 3,
+        "image_path": "uploads\/yuki.s\/closet\/1756514535_ダウンロード (10).jpeg",
+        "manual_tags": {
+            "category": "ボトムス",
+            "genres": [
+                "きれいめ"
+            ],
+            "notes": "ユニクロ"
+        }
     }
 ]

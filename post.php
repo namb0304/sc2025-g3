@@ -2,72 +2,52 @@
 require_once 'helpers.php';
 login_check();
 
-// 自分のクローゼットアイテムを取得
-$my_closet_items = [];
-$all_closet_items = load_data('closet');
-if (!empty($all_closet_items)) {
-    foreach ($all_closet_items as $item) {
-        if ($item['user_id'] == $_SESSION['user_id']) {
-            $my_closet_items[] = $item;
-        }
-    }
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $posts = load_data('posts');
-    $user = get_user_by_id($_SESSION['user_id']);
-    
-    $title = htmlspecialchars($_POST['title']);
-    $description = htmlspecialchars($_POST['description']);
-    $selected_item_path = $_POST['selected_item_path'] ?? ''; // 選択されたアイテムの画像パス
-
-    if (!empty($selected_item_path)) {
-        $new_post = [
-            'id' => uniqid(),
-            'user_id' => $user['id'],
-            'username' => $user['username'],
-            'title' => $title,
-            'description' => $description,
-            'post_image' => $selected_item_path, // クローゼットアイテムのパスを保存
-            'comments' => [],
-            'likes' => 0
-        ];
-        $posts[] = $new_post;
-        save_data('posts', $posts);
-        header('Location: ' . BASE_URL . '/index.php');
-        exit;
-    } else {
-        $error = "投稿するアイテムを選択してください。";
-    }
-}
-
 include 'templates/header.php';
 ?>
 <div class="container">
     <h2>コーディネートを投稿する</h2>
-    <form action="<?= BASE_URL ?>/post.php" method="post">
-        
-        <h3>1. コーディネートの主役を選択</h3>
-        <?php if (empty($my_closet_items)): ?>
-            <p>投稿できるアイテムがクローゼットにありません。先に<a href="<?= BASE_URL ?>/closet.php">クローゼット登録</a>をしてください。</p>
-        <?php else: ?>
-            <div class="item-selection-grid">
-                <?php foreach(array_reverse($my_closet_items) as $item): ?>
-                    <label class="selectable-item">
-                        <input type="radio" name="selected_item_path" value="<?= htmlspecialchars($item['image_path']) ?>" required>
-                        <img src="<?= htmlspecialchars($item['image_path']) ?>" alt="選択肢">
-                    </label>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+    <p>投稿の方法を選択してください。</p>
 
-        <?php if (!empty($my_closet_items)): ?>
-            <h3>2. コーディネート情報を入力</h3>
-            <?php if(isset($error)): ?><p class="error"><?= $error ?></p><?php endif; ?>
-            <input type="text" name="title" placeholder="コーディネートのタイトル" required><br>
-            <textarea name="description" placeholder="コーディネートの説明やポイント" required></textarea><br>
-            <button type="submit">この内容で投稿する</button>
-        <?php endif; ?>
-    </form>
+    <div class="post-method-selection">
+        <a href="<?= BASE_URL ?>/post_from_closet.php" class="method-box">
+            <h3>クローゼットから選択して投稿</h3>
+            <p>既に登録済みのあなたの服を使って、新しいコーディネートを投稿します。</p>
+        </a>
+        <a href="<?= BASE_URL ?>/post_new_item.php" class="method-box">
+            <h3>新しく服を登録して投稿</h3>
+            <p>新しい服の写真をアップロードし、クローゼットに登録すると同時にコーディネートを投稿します。</p>
+        </a>
+    </div>
 </div>
+
+<style>
+/* このページ専用のスタイル */
+.post-method-selection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+.method-box {
+    display: block;
+    padding: 30px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    transition: all .3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.method-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-color: #007bff;
+}
+.method-box h3 {
+    margin: 0 0 10px 0;
+    color: #007bff;
+}
+</style>
+
 <?php include 'templates/footer.php'; ?>

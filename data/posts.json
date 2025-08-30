@@ -34,5 +34,58 @@
         "post_image": "uploads\/s2222019@stu.musashino-u.ac.jp\/posts\/1756474432_thumb-1548-3.jpg",
         "comments": [],
         "likes": 0
+    },
+    {
+        "id": "68b238a755d5f",
+        "user_id": 2,
+        "username": "aaa",
+        "title": "test",
+        "description": "；；；；",
+        "post_image": "uploads\/aaa\/closet\/1756510188_2024_Acer_Consumer_Default_3840x2400.jpg",
+        "comments": [],
+        "likes": 0
+    },
+    {
+        "id": "68b23b5e9781e",
+        "user_id": 1,
+        "username": "s2222019@stu.musashino-u.ac.jp",
+        "title": "ｌｌｌ",
+        "description": "；；；",
+        "post_image": "uploads\/s2222019@stu.musashino-u.ac.jp\/closet\/1756511057_2024_Acer_Consumer_Option_01_3840x2400.jpg",
+        "comments": [
+            {
+                "username": "s2222019@stu.musashino-u.ac.jp",
+                "text": "ｌｌｌｌ",
+                "timestamp": "2025-08-30 08:44:40"
+            }
+        ],
+        "likes": 0
+    },
+    {
+        "id": "post_68b2481550a7e",
+        "user_id": 3,
+        "username": "yuki.s",
+        "title": "test",
+        "description": "test",
+        "post_image": "uploads\/yuki.s\/closet\/1756511619_images (1).jpeg",
+        "comments": [],
+        "likes": [
+            3
+        ],
+        "dislikes": []
+    },
+    {
+        "id": "post_68b24aba772ee",
+        "user_id": 1,
+        "username": "s2222019@stu.musashino-u.ac.jp",
+        "closet_item_id": "item_68b23b517e6d8",
+        "post_image": "uploads\/s2222019@stu.musashino-u.ac.jp\/closet\/1756511057_2024_Acer_Consumer_Option_01_3840x2400.jpg",
+        "title": "ｌｌｌ",
+        "description": "ｌｌｌ",
+        "comments": [],
+        "likes": [],
+        "dislikes": [
+            3
+        ]
     }
 ]

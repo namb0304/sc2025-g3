@@ -2,9 +2,7 @@
 require_once 'helpers.php';
 login_check();
 
-$message = '';
-$genre_options = ['カジュアル', 'きれいめ', 'ストリート', 'フェミニン', 'モード', 'オフィス', 'アウトドア'];
-
+// --- フォーム送信(POST)の処理をページの描画より先に行う ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["item_image"])) {
     $user = get_user_by_id($_SESSION['user_id']);
     $closet = load_data('closet');
@@ -32,12 +30,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["item_image"])) {
         ];
         $closet[] = $new_item;
         save_data('closet', $closet);
-        $message = "アイテムが登録されました。";
+        
+        // メッセージをセッションに保存
+        $_SESSION['message'] = "アイテムが登録されました。";
     } else {
-        $message = "ファイルのアップロードに失敗しました。";
+        $_SESSION['message'] = "ファイルのアップロードに失敗しました。";
     }
+
+    // 【重要】処理が終わったら同じページにリダイレクトする
+    header('Location: ' . BASE_URL . '/closet.php');
+    exit; // リダイレクト後にスクリプトの実行を停止
 }
 
+// --- ここから下はページ表示(GET)の処理 ---
+
+// セッションからメッセージを取得して、表示後に消去する
+$message = '';
+if (isset($_SESSION['message'])) {
+    $message = $_SESSION['message'];
+    unset($_SESSION['message']);
+}
+
+$genre_options = ['カジュアル', 'きれいめ', 'ストリート', 'フェミニン', 'モード', 'オフィス', 'アウトドア'];
+
+// 自分のアイテムのみを取得
 $my_closet_items = [];
 $all_closet_items = load_data('closet');
 if (!empty($all_closet_items)) {
@@ -53,7 +69,7 @@ include 'templates/header.php';
 <div class="container">
     <h2>マイクローゼット</h2>
     <h3>アイテムを登録</h3>
-    <?php if($message): ?><p><?= htmlspecialchars($message) ?></p><?php endif; ?>
+    <?php if($message): ?><p class="message-box"><?= htmlspecialchars($message) ?></p><?php endif; ?>
     <form class="closet-form" action="<?= BASE_URL ?>/closet.php" method="post" enctype="multipart/form-data">
         <p><strong>1. 写真を選択</strong></p>
         <input type="file" name="item_image" required>
@@ -94,6 +110,7 @@ include 'templates/header.php';
 .closet-form p { font-weight: bold; margin-top: 20px; }
 .radio-group, .checkbox-group { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 10px; }
 .radio-group label, .checkbox-group label { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; background: #f0f0f0; border-radius: 5px; cursor: pointer; }
+.message-box { padding: 15px; background-color: #eef7ff; border-left: 5px solid #007bff; margin: 20px 0; }
 </style>
 
 <?php include 'templates/footer.php'; ?>
