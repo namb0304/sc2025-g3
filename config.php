@@ -2,5 +2,5 @@
 // サイトのベースURLを定義します。
 // ご自身の環境に合わせて書き換えてください。
 // 末尾にスラッシュは含めないでください。
-define('BASE_URL', '/~egashira_s/SC2025-G3');
+define('BASE_URL', '/~nambo/sc2025-g3');
 ?>
