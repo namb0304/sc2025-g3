@@ -1,86 +1,224 @@
 <?php
-// 設定ファイルを読み込む
+// 設定ファイルとDB接続ファイルを読み込む
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
 
 // セッションを開始
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// データディレクトリのパスを定義
-define('DATA_DIR', __DIR__ . '/data/');
+// --- ユーザー (users) 関連 ---
 
-/**
- * JSONファイルを安全に読み込む関数
- */
-function load_data($filename) {
-    $file = DATA_DIR . $filename . '.json';
-    if (!file_exists($file)) return [];
-    $content = file_get_contents($file);
-    if (empty($content)) return [];
-    $data = json_decode($content, true);
-    if (json_last_error() !== JSON_ERROR_NONE) return [];
-    return $data;
+function find_user_by_username($username) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('SELECT * FROM users WHERE username = ?');
+    $stmt->execute([$username]);
+    return $stmt->fetch();
 }
 
-/**
- * データをJSONファイルに保存する関数
- */
-function save_data($filename, $data) {
-    $file = DATA_DIR . $filename . '.json';
-    file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+function get_user_by_id($id) {
+    if (!$id) return null;
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('SELECT id, username FROM users WHERE id = ?');
+    $stmt->execute([$id]);
+    return $stmt->fetch();
 }
 
-/**
- * 配列の中からIDで特定の要素を検索する関数 (堅牢版)
- */
-function find_by_id($data, $id) {
-    // データが配列でない、または空の場合はnullを返す
-    if (!is_array($data) || empty($data)) return null;
-    foreach ($data as $item) {
-        if (isset($item['id']) && $item['id'] == $id) {
-            return $item;
-        }
+function create_user($username, $password) {
+    $pdo = get_db_connection();
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare('INSERT INTO users (username, password) VALUES (?, ?)');
+    return $stmt->execute([$username, $hashed_password]);
+}
+
+// --- クローゼット (closet_items) 関連 ---
+
+// ★ 変更点: パフォーマンス向上のため、重い画像データを取得しないようにSELECT文を修正
+function get_closet_items_by_user_id($user_id) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('SELECT id, user_id, category, genres, notes, created_at, mime_type FROM closet_items WHERE user_id = ? ORDER BY created_at DESC');
+    $stmt->execute([$user_id]);
+    return $stmt->fetchAll();
+}
+
+// ★ 変更点: こちらも画像データを取得しないように修正
+function find_closet_item_by_id($item_id, $user_id = null) {
+    $pdo = get_db_connection();
+    $sql = 'SELECT id, user_id, category, genres, notes, created_at, mime_type FROM closet_items WHERE id = ?';
+    $params = [$item_id];
+    if ($user_id) {
+        $sql .= ' AND user_id = ?';
+        $params[] = $user_id;
     }
-    return null;
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetch();
 }
 
+// ★ 変更点: ファイルパスを保存する代わりに、画像データ本体を保存する関数に置き換え
 /**
- * 配列の中からIDで特定の要素のインデックス(添字)を検索する関数 (堅牢版)
+ * 画像データをデータベースに直接保存する関数
  */
-function find_index_by_id($data, $id) {
-    // データが配列でない、または空の場合はfalseを返す
-    if (!is_array($data) || empty($data)) return false;
-    foreach ($data as $index => $item) {
-        if (isset($item['id']) && $item['id'] == $id) {
-            return $index;
-        }
+function create_closet_item_in_db($user_id, $image_data, $mime_type, $category, $genres, $notes) {
+    $pdo = get_db_connection();
+    $genres_pg_array = '{' . implode(',', array_map('trim', $genres)) . '}';
+    $stmt = $pdo->prepare(
+        'INSERT INTO closet_items (user_id, image_data, mime_type, category, genres, notes) VALUES (?, ?, ?, ?, ?, ?)'
+    );
+    $stmt->bindParam(1, $user_id);
+    $stmt->bindParam(2, $image_data, PDO::PARAM_LOB); // バイナリデータとして扱う
+    $stmt->bindParam(3, $mime_type);
+    $stmt->bindParam(4, $category);
+    $stmt->bindParam(5, $genres_pg_array);
+    $stmt->bindParam(6, $notes);
+    
+    return $stmt->execute();
+}
+
+// ★ 追加: image.phpが画像データを取得するための新しい関数
+/**
+ * IDを指定して画像データとMIMEタイプを取得する関数
+ */
+function get_image_data_by_item_id($item_id) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('SELECT image_data, mime_type FROM closet_items WHERE id = ?');
+    $stmt->execute([$item_id]);
+    
+    $result = $stmt->fetch();
+    
+    if ($result && is_resource($result['image_data'])) {
+        $result['image_data'] = stream_get_contents($result['image_data']);
     }
-    return false;
+    
+    return $result;
 }
 
-/**
- * ログイン状態をチェックする関数
- */
+function delete_closet_item($item_id, $user_id) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('DELETE FROM closet_items WHERE id = ? AND user_id = ?');
+    return $stmt->execute([$item_id, $user_id]);
+}
+
+// --- 投稿 (posts) 関連 ---
+// (ここはご提供いただいたコードをそのまま反映)
+
+function create_post($user_id, $title, $description, $image_path, $closet_item_id = null) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare(
+        'INSERT INTO posts (user_id, title, description, post_image, closet_item_id) VALUES (?, ?, ?, ?, ?)'
+    );
+    return $stmt->execute([$user_id, $title, $description, $image_path, $closet_item_id]);
+}
+
+function get_all_posts($search_query = '') {
+    $pdo = get_db_connection();
+    $sql = "SELECT p.*, u.username FROM posts p JOIN users u ON p.user_id = u.id";
+    $params = [];
+    if (!empty($search_query)) {
+        $sql .= " WHERE p.title ILIKE ? OR u.username ILIKE ?";
+        $params = ['%' . $search_query . '%', '%' . $search_query . '%'];
+    }
+    $sql .= " ORDER BY p.created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll();
+}
+
+function get_posts_by_user_id($user_id) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('SELECT * FROM posts WHERE user_id = ? ORDER BY created_at DESC');
+    $stmt->execute([$user_id]);
+    return $stmt->fetchAll();
+}
+
+function get_post_by_id($post_id) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('SELECT p.*, u.username FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id = ?');
+    $stmt->execute([$post_id]);
+    return $stmt->fetch();
+}
+
+function delete_post($post_id, $user_id) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('DELETE FROM posts WHERE id = ? AND user_id = ?');
+    return $stmt->execute([$post_id, $user_id]);
+}
+
+// --- コメント (comments) 関連 ---
+// (ここはご提供いただいたコードをそのまま反映)
+
+function get_comments_by_post_id($post_id) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('SELECT c.*, u.username FROM comments c JOIN users u ON c.user_id = u.id WHERE c.post_id = ? ORDER BY c.created_at DESC');
+    $stmt->execute([$post_id]);
+    return $stmt->fetchAll();
+}
+
+function add_comment($post_id, $user_id, $text) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('INSERT INTO comments (post_id, user_id, text) VALUES (?, ?, ?)');
+    return $stmt->execute([$post_id, $user_id, $text]);
+}
+
+function delete_comment($comment_id, $user_id) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('DELETE FROM comments WHERE id = ? AND user_id = ?');
+    return $stmt->execute([$comment_id, $user_id]);
+}
+
+// --- いいね (likes) 関連 ---
+// (ここはご提供いただいたコードをそのまま反映)
+
+function toggle_like($post_id, $user_id, $like_type) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('SELECT like_type FROM likes WHERE post_id = ? AND user_id = ?');
+    $stmt->execute([$post_id, $user_id]);
+    $existing = $stmt->fetch();
+
+    if ($existing) {
+        if ($existing['like_type'] == $like_type) {
+            $stmt = $pdo->prepare('DELETE FROM likes WHERE post_id = ? AND user_id = ?');
+            return $stmt->execute([$post_id, $user_id]);
+        } else {
+            $stmt = $pdo->prepare('UPDATE likes SET like_type = ? WHERE post_id = ? AND user_id = ?');
+            return $stmt->execute([$like_type, $post_id, $user_id]);
+        }
+    } else {
+        $stmt = $pdo->prepare('INSERT INTO likes (post_id, user_id, like_type) VALUES (?, ?, ?)');
+        return $stmt->execute([$post_id, $user_id, $like_type]);
+    }
+}
+
+function get_like_status($post_id, $user_id) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare('SELECT like_type FROM likes WHERE post_id = ? AND user_id = ?');
+    $stmt->execute([$post_id, $user_id]);
+    $result = $stmt->fetch();
+    return $result ? $result['like_type'] : 0;
+}
+
+function get_like_counts($post_id) {
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare(
+        "SELECT
+            (SELECT COUNT(*) FROM likes WHERE post_id = ? AND like_type = 1) as likes,
+            (SELECT COUNT(*) FROM likes WHERE post_id = ? AND like_type = -1) as dislikes"
+    );
+    $stmt->execute([$post_id, $post_id]);
+    return $stmt->fetch();
+}
+
+// --- 認証関連 ---
+// (ここはご提供いただいたコードをそのまま反映)
+
 function is_logged_in() {
     return isset($_SESSION['user_id']);
 }
 
-/**
- * 未ログイン時にログインページへリダイレクトする関数
- */
 function login_check() {
     if (!is_logged_in()) {
         header('Location: ' . BASE_URL . '/login.php');
         exit;
     }
 }
-
-/**
- * ユーザーIDからユーザー情報を取得する関数
- */
-function get_user_by_id($id) {
-    $users = load_data('users');
-    return find_by_id($users, $id);
-}
-?>

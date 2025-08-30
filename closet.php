@@ -1,68 +1,61 @@
 <?php
+// ▼▼▼ デバッグのためにこの2行を追加 ▼▼▼
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+// ▲▲▲ ここまで ▲▲▲
+
 require_once 'helpers.php';
 login_check();
 
-// --- フォーム送信(POST)の処理をページの描画より先に行う ---
+$user_id = $_SESSION['user_id'];
+$user = get_user_by_id($user_id);
+
+// --- フォーム送信(POST)の処理 ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["item_image"])) {
-    $user = get_user_by_id($_SESSION['user_id']);
-    $closet = load_data('closet');
     
-    $category = $_POST['category'] ?? '未分類';
-    $genres = $_POST['genres'] ?? [];
-    $notes = $_POST['notes'] ?? '';
-
-    $target_dir = 'uploads/' . $user['username'] . '/closet/';
-    if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
-
-    $filename = time() . '_' . basename($_FILES["item_image"]["name"]);
-    $target_file = $target_dir . $filename;
-
-    if (move_uploaded_file($_FILES["item_image"]["tmp_name"], $target_file)) {
-        $new_item = [
-            'id' => uniqid('item_'),
-            'user_id' => $user['id'],
-            'image_path' => $target_file,
-            'manual_tags' => [
-                'category' => $category,
-                'genres' => $genres,
-                'notes' => htmlspecialchars($notes)
-            ]
+    // --- ① 先にPHPのアップロードエラーをチェック ---
+    $upload_error = $_FILES['item_image']['error'];
+    if ($upload_error !== UPLOAD_ERR_OK) {
+        $error_messages = [
+            UPLOAD_ERR_INI_SIZE   => 'ファイルサイズがサーバーの上限(php.ini)を超えています。',
+            UPLOAD_ERR_FORM_SIZE  => 'ファイルサイズがフォームの上限を超えています。',
+            UPLOAD_ERR_PARTIAL    => 'ファイルが部分的にしかアップロードされませんでした。',
+            UPLOAD_ERR_NO_FILE    => 'ファイルが選択されていません。',
+            UPLOAD_ERR_NO_TMP_DIR => 'サーバーに一時保存フォルダがありません。',
+            UPLOAD_ERR_CANT_WRITE => 'サーバーへのファイル書き込みに失敗しました。パーミッションを確認してください。',
+            UPLOAD_ERR_EXTENSION  => 'PHPの拡張機能によりアップロードが中断されました。',
         ];
-        $closet[] = $new_item;
-        save_data('closet', $closet);
-        
-        // メッセージをセッションに保存
-        $_SESSION['message'] = "アイテムが登録されました。";
+        $_SESSION['message'] = "アップロードエラー: " . ($error_messages[$upload_error] ?? '不明なエラーです。');
+        header('Location: ' . BASE_URL . '/closet.php');
+        exit;
+    }
+
+    // --- ② ①でエラーがなければ、DBへの保存処理 ---
+    $image_data = file_get_contents($_FILES['item_image']['tmp_name']);
+    $mime_type = $_FILES['item_image']['type'];
+
+    if (create_closet_item_in_db(
+        $user_id,
+        $image_data,
+        $mime_type,
+        $_POST['category'] ?? '未分類',
+        $_POST['genres'] ?? [],
+        htmlspecialchars($_POST['notes'] ?? '')
+    )) {
+        $_SESSION['message'] = "アイテムがデータベースに登録されました。";
     } else {
-        $_SESSION['message'] = "ファイルのアップロードに失敗しました。";
+        $_SESSION['message'] = "データベースへの登録に失敗しました。";
     }
-
-    // 【重要】処理が終わったら同じページにリダイレクトする
+    
     header('Location: ' . BASE_URL . '/closet.php');
-    exit; // リダイレクト後にスクリプトの実行を停止
+    exit;
 }
 
-// --- ここから下はページ表示(GET)の処理 ---
-
-// セッションからメッセージを取得して、表示後に消去する
-$message = '';
-if (isset($_SESSION['message'])) {
-    $message = $_SESSION['message'];
-    unset($_SESSION['message']);
-}
-
+// --- ページ表示(GET)の処理 ---
+$message = $_SESSION['message'] ?? '';
+unset($_SESSION['message']);
 $genre_options = ['カジュアル', 'きれいめ', 'ストリート', 'フェミニン', 'モード', 'オフィス', 'アウトドア'];
-
-// 自分のアイテムのみを取得
-$my_closet_items = [];
-$all_closet_items = load_data('closet');
-if (!empty($all_closet_items)) {
-    foreach ($all_closet_items as $item) {
-        if ($item['user_id'] == $_SESSION['user_id']) {
-            $my_closet_items[] = $item;
-        }
-    }
-}
+$my_closet_items = get_closet_items_by_user_id($user_id);
 
 include 'templates/header.php';
 ?>
@@ -71,7 +64,7 @@ include 'templates/header.php';
     <h3>アイテムを登録</h3>
     <?php if($message): ?><p class="message-box"><?= htmlspecialchars($message) ?></p><?php endif; ?>
     <form class="closet-form" action="<?= BASE_URL ?>/closet.php" method="post" enctype="multipart/form-data">
-        <p><strong>1. 写真を選択</strong></p>
+        <p><strong>1. 写真を選択 (必須)</strong></p>
         <input type="file" name="item_image" required>
         <p><strong>2. 種類を選択 (必須)</strong></p>
         <div class="radio-group">
@@ -96,13 +89,17 @@ include 'templates/header.php';
     <hr>
     <h3>登録済みアイテム</h3>
     <div class="closet-grid">
-        <?php foreach (array_reverse($my_closet_items) as $item): ?>
-            <div class="closet-item">
-                <a href="<?= BASE_URL ?>/closet_detail.php?id=<?= $item['id'] ?>">
-                    <img src="<?= htmlspecialchars($item['image_path']) ?>" alt="クローゼットアイテム">
-                </a>
-            </div>
-        <?php endforeach; ?>
+        <?php if (empty($my_closet_items)): ?>
+            <p>まだアイテムが登録されていません。</p>
+        <?php else: ?>
+            <?php foreach ($my_closet_items as $item): ?>
+                <div class="closet-item">
+                    <a href="<?= BASE_URL ?>/closet_detail.php?id=<?= $item['id'] ?>">
+                        <img src="image.php?id=<?= $item['id'] ?>" alt="<?= htmlspecialchars($item['category']) ?>">
+                    </a>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </div>
 

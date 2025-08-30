@@ -1,17 +1,11 @@
 <?php
 require_once 'helpers.php';
 
-$posts = load_data('posts');
 $search_query = $_GET['search'] ?? '';
+$posts = get_all_posts($search_query);
 
-if ($search_query) {
-    $posts = array_filter($posts, function($post) use ($search_query) {
-        return stripos($post['title'], $search_query) !== false || stripos($post['username'], $search_query) !== false;
-    });
-}
+include 'templates/header.php';
 ?>
-
-<?php include 'templates/header.php'; ?>
 <div class="container">
     <h2>みんなのコーディネート</h2>
     <form action="index.php" method="get">
@@ -23,7 +17,7 @@ if ($search_query) {
         <?php if (empty($posts)): ?>
             <p>投稿が見つかりませんでした。</p>
         <?php else: ?>
-            <?php foreach (array_reverse($posts) as $post): ?>
+            <?php foreach ($posts as $post): ?>
                 <div class="post-card">
                     <a href="post_detail.php?id=<?= $post['id'] ?>">
                         <img src="<?= htmlspecialchars($post['post_image']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
