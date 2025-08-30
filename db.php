@@ -2,9 +2,9 @@
 // データベース接続情報を定数として定義
 define('DB_HOST', 'localhost');      // ご自身の環境に合わせて変更してください
 define('DB_PORT', '5432');           // PostgreSQLのデフォルトポートは5432
-define('DB_NAME', '');    // 作成したデータベース名
-define('DB_USER', '');  // PostgreSQLのユーザー名
-define('DB_PASS', '');  // PostgreSQLのパスワード
+define('DB_NAME', 'nambo');    // 作成したデータベース名
+define('DB_USER', 'nambo');  // PostgreSQLのユーザー名
+define('DB_PASS', 'e6Q9JGJS');  // PostgreSQLのパスワード
 
 /**
  * データベース接続(PDO)を取得する関数
