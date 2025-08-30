@@ -1,7 +1,6 @@
 <?php
 // 設定ファイルとDB接続ファイルを読み込む
-// (これらのファイル名はあなたの環境に合わせてください)
-require_once __DIR__ . '/config.php'; 
+require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 
 // セッションを開始
@@ -13,7 +12,6 @@ if (session_status() == PHP_SESSION_NONE) {
 
 function find_user_by_username($username) {
     $pdo = get_db_connection();
-    // ★★★ 修正点 ★★★
     $stmt = $pdo->prepare('SELECT * FROM fashion_users WHERE username = ?');
     $stmt->execute([$username]);
     return $stmt->fetch();
@@ -22,7 +20,6 @@ function find_user_by_username($username) {
 function get_user_by_id($id) {
     if (!$id) return null;
     $pdo = get_db_connection();
-    // ★★★ 修正点 ★★★
     $stmt = $pdo->prepare('SELECT id, username FROM fashion_users WHERE id = ?');
     $stmt->execute([$id]);
     return $stmt->fetch();
@@ -31,7 +28,6 @@ function get_user_by_id($id) {
 function create_user($username, $password) {
     $pdo = get_db_connection();
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    // ★★★ 修正点 ★★★
     $stmt = $pdo->prepare('INSERT INTO fashion_users (username, password) VALUES (?, ?)');
     return $stmt->execute([$username, $hashed_password]);
 }
@@ -65,7 +61,7 @@ function create_closet_item_in_db($user_id, $image_data, $mime_type, $category, 
         'INSERT INTO closet_items (user_id, image_data, mime_type, category, genres, notes) VALUES (?, ?, ?, ?, ?, ?)'
     );
     $stmt->bindParam(1, $user_id);
-    $stmt->bindParam(2, $image_data, PDO::PARAM_LOB);
+    $stmt->bindParam(2, $image_data, PDO::PARAM_LOB); // バイナリデータとして扱う
     $stmt->bindParam(3, $mime_type);
     $stmt->bindParam(4, $category);
     $stmt->bindParam(5, $genres_pg_array);
@@ -96,18 +92,27 @@ function delete_closet_item($item_id, $user_id) {
 
 // --- 投稿 (posts) 関連 ---
 
-function create_post($user_id, $title, $description, $image_path, $closet_item_id = null) {
+function create_post($user_id, $title, $description, $closet_item_id = null) {
     $pdo = get_db_connection();
     $stmt = $pdo->prepare(
-        'INSERT INTO posts (user_id, title, description, post_image, closet_item_id) VALUES (?, ?, ?, ?, ?)'
+        'INSERT INTO posts (user_id, title, description, closet_item_id) VALUES (?, ?, ?, ?)'
     );
-    return $stmt->execute([$user_id, $title, $description, $image_path, $closet_item_id]);
+    return $stmt->execute([$user_id, $title, $description, $closet_item_id]);
 }
 
+// ★★★ ここが改善点 ★★★
+// index.phpでいいね数を効率的に表示するために、いいね数を取得するSQLに修正
 function get_all_posts($search_query = '') {
     $pdo = get_db_connection();
-    // ★★★ 修正点 ★★★
-    $sql = "SELECT p.*, u.username FROM posts p JOIN fashion_users u ON p.user_id = u.id";
+    $sql = "
+        SELECT 
+            p.*, 
+            u.username,
+            (SELECT COUNT(*) FROM likes WHERE post_id = p.id AND like_type = 1) as likes_count,
+            (SELECT COUNT(*) FROM likes WHERE post_id = p.id AND like_type = -1) as dislikes_count
+        FROM posts p 
+        JOIN fashion_users u ON p.user_id = u.id
+    ";
     $params = [];
     if (!empty($search_query)) {
         $sql .= " WHERE p.title ILIKE ? OR u.username ILIKE ?";
@@ -128,7 +133,6 @@ function get_posts_by_user_id($user_id) {
 
 function get_post_by_id($post_id) {
     $pdo = get_db_connection();
-    // ★★★ 修正点 ★★★
     $stmt = $pdo->prepare('SELECT p.*, u.username FROM posts p JOIN fashion_users u ON p.user_id = u.id WHERE p.id = ?');
     $stmt->execute([$post_id]);
     return $stmt->fetch();
@@ -144,7 +148,6 @@ function delete_post($post_id, $user_id) {
 
 function get_comments_by_post_id($post_id) {
     $pdo = get_db_connection();
-    // ★★★ 修正点 ★★★
     $stmt = $pdo->prepare('SELECT c.*, u.username FROM comments c JOIN fashion_users u ON c.user_id = u.id WHERE c.post_id = ? ORDER BY c.created_at DESC');
     $stmt->execute([$post_id]);
     return $stmt->fetchAll();
@@ -215,4 +218,3 @@ function login_check() {
         exit;
     }
 }
-
