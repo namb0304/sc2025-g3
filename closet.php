@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["item_image"])) {
             UPLOAD_ERR_EXTENSION  => 'PHPの拡張機能によりアップロードが中断されました。',
         ];
         $_SESSION['message'] = "アップロードエラー: " . ($error_messages[$upload_error] ?? '不明なエラーです。');
-        header('Location: ' . BASE_URL . '/closet.php');
+        header('Location: ' . BASE_URL . '/mypage.php?tab=closet');
         exit;
     }
 
@@ -45,8 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["item_image"])) {
     } else {
         $_SESSION['message'] = "データベースへの登録に失敗しました。";
     }
-    
-    header('Location: ' . BASE_URL . '/closet.php');
+
+    header('Location: ' . BASE_URL . '/mypage.php?tab=closet');
     exit;
 }
 

@@ -229,3 +229,156 @@ form button:hover { background-color: #0056b3; }
     padding: 0;
     margin: 0;
 }
+
+/* ======== style.css に追記 ======== */
+
+/* --- クローゼットタブ内のデザイン --- */
+
+/* フォーム全体 */
+.tab-content .form-container { 
+    background-color: white; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+    padding: 2rem; 
+    max-width: 800px; 
+    margin: 2rem auto; 
+}
+.tab-content .form-header { 
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 1.5rem; 
+    padding-bottom: 1rem; 
+    border-bottom: 1px solid #eee; 
+    color: var(--purple-color, #6c5ce7); 
+    font-size: 1.5rem; 
+    font-weight: 600; 
+    gap: 0.5rem; 
+}
+.tab-content .form-row { 
+    margin-bottom: 1.5rem; 
+}
+.tab-content .label { 
+    display: block; 
+    margin-bottom: 0.5rem; 
+    font-weight: 600; 
+}
+.tab-content .select, .tab-content textarea { 
+    width: 100%; 
+    padding: 0.8rem 1rem; 
+    border: 1px solid #ddd; 
+    border-radius: 6px; 
+    font-size: 1rem; 
+    transition: border-color 0.3s, box-shadow 0.3s; 
+}
+.tab-content .select:focus, .tab-content textarea:focus { 
+    outline: none; 
+    border-color: var(--purple-color, #6c5ce7); 
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1); 
+}
+
+/* 画像プレビュー */
+.image-preview { 
+    width: 100%; 
+    height: 280px; 
+    border: 2px dashed #ddd; 
+    border-radius: 12px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+    transition: border-color 0.3s; 
+    cursor: pointer; 
+}
+.image-preview:hover { 
+    border-color: var(--purple-color, #6c5ce7); 
+}
+.image-preview img { 
+    max-width: 100%; 
+    max-height: 100%; 
+    display: none; 
+}
+.image-placeholder { 
+    text-align: center; 
+    color: #777; 
+}
+.image-placeholder i { 
+    font-size: 3rem; 
+    margin-bottom: 1rem; 
+}
+
+/* チェックボックス */
+.checkbox-group { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 15px; 
+    margin-bottom: 10px; 
+}
+.checkbox-group label { 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 5px; 
+    padding: 5px 10px; 
+    background: #f0f0f0; 
+    border-radius: 5px; 
+    cursor: pointer; 
+}
+
+/* ボタン */
+.btn-purple { 
+    background-color: var(--purple-color, #6c5ce7); 
+    color: white; 
+    border: none; 
+    width: 100%; 
+    padding: 0.8rem 1.5rem; 
+    border-radius: 6px; 
+    font-size: 1rem; 
+    cursor: pointer; 
+    font-weight: 500; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 0.5rem; 
+}
+.btn-purple:hover { 
+    background-color: #5549c0; 
+}
+
+/* 登録済みアイテム */
+.closet-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+.closet-item a { 
+    display: block; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+    transition: transform 0.3s, box-shadow 0.3s; 
+}
+.closet-item a:hover { 
+    transform: scale(1.05); 
+}
+.closet-item img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    aspect-ratio: 1 / 1.2; 
+    display: block; 
+}
+
+.message-box { 
+    padding: 15px; 
+    background-color: var(--purple-light, #f1effe); 
+    border-left: 5px solid var(--purple-color, #6c5ce7); 
+    margin: 0 0 20px 0; 
+    border-radius: 5px; 
+    font-weight: 500; 
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 3rem 0;
+}
