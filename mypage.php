@@ -10,13 +10,13 @@ $tab = $_GET['tab'] ?? 'posts';
 
 // タブに応じて必要なデータだけを取得する
 if ($tab === 'closet') {
-    // クローゼットタブを表示する場合のデータ取得 (closet.phpから移植)
+    // クローゼットタブを表示する場合のデータ取得
     $message = $_SESSION['message'] ?? '';
     unset($_SESSION['message']);
     $genre_options = ['カジュアル', 'きれいめ', 'ストリート', 'フェミニン', 'モード', 'オフィス', 'アウトドア'];
     $my_closet_items = get_closet_items_by_user_id($user_id);
 } elseif ($tab === 'likes') {
-    // いいねタブのデータ取得 (今回は空)
+    // いいねタブのデータ取得
     $liked_posts = [];
 } else {
     // 投稿タブのデータ取得 (デフォルト)
@@ -71,13 +71,32 @@ include 'templates/header.php';
 
         <?php elseif ($tab === 'closet'): ?>
             <?php if($message): ?><p class="message-box"><?= htmlspecialchars($message) ?></p><?php endif; ?>
+
+            <h3><i class="fas fa-columns"></i> 登録済みアイテム</h3>
+            <div class="closet-grid">
+                <?php if (empty($my_closet_items)): ?>
+                    <p>まだアイテムが登録されていません。</p>
+                <?php else: ?>
+                    <?php foreach (array_reverse($my_closet_items) as $item): ?>
+                        <div class="closet-item">
+                            <a href="<?= BASE_URL ?>/closet_detail.php?id=<?= $item['id'] ?>">
+                                <img src="image.php?id=<?= $item['id'] ?>" alt="<?= htmlspecialchars($item['category']) ?>">
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+
+            <hr>
+
             <div class="form-container">
-                <div class="form-header"><i class="fas fa-plus-circle"></i> アイテム情報を入力</div>
+                <div class="form-header"><i class="fas fa-plus-circle"></i> 新しいアイテムを登録</div>
                 <form action="<?= BASE_URL ?>/closet.php" method="post" enctype="multipart/form-data">
                     <div class="form-row">
                         <label for="itemImage" class="label">写真 (必須)</label>
                         <div class="image-preview" id="imagePreview">
-                            <img src="" alt="画像プレビュー" id="previewImage"><div class="image-placeholder" id="imagePlaceholder"><i class="fas fa-camera"></i><p>クリックして画像を選択</p></div>
+                            <img src="" alt="画像プレビュー" id="previewImage">
+                            <div class="image-placeholder" id="imagePlaceholder"><i class="fas fa-camera"></i><p>クリックして画像を選択</p></div>
                         </div>
                         <input type="file" id="itemImage" name="item_image" accept="image/*" required style="display: none;">
                     </div>
@@ -95,17 +114,11 @@ include 'templates/header.php';
                     <button type="submit" class="btn-purple"><i class="fas fa-save"></i> クローゼットに登録</button>
                 </form>
             </div>
-            <hr><h3>登録済みアイテム</h3>
-            <div class="closet-grid">
-                <?php if (empty($my_closet_items)): ?><p>まだアイテムが登録されていません。</p>
-                <?php else: ?><?php foreach ($my_closet_items as $item): ?>
-                    <div class="closet-item"><a href="<?= BASE_URL ?>/closet_detail.php?id=<?= $item['id'] ?>"><img src="image.php?id=<?= $item['id'] ?>" alt="<?= htmlspecialchars($item['category']) ?>"></a></div>
-                <?php endforeach; ?><?php endif; ?>
-            </div>
+            
             <script>
             document.addEventListener('DOMContentLoaded', function() {
-                if (document.getElementById('imagePreview')) {
-                    const imagePreview = document.getElementById('imagePreview');
+                const imagePreview = document.getElementById('imagePreview');
+                if (imagePreview) { // このタブが表示されている時だけ実行
                     const itemImage = document.getElementById('itemImage');
                     imagePreview.addEventListener('click', function() { itemImage.click(); });
                     itemImage.addEventListener('change', function(e) {
@@ -125,7 +138,7 @@ include 'templates/header.php';
                 }
             });
             </script>
-        <?php elseif ($tab === 'likes'): ?>
+            <?php elseif ($tab === 'likes'): ?>
             <div class="empty-state">
                 <h3>「いいね！」した投稿はまだありません</h3>
                 <p>気になる投稿に「いいね！」してみましょう！</p>
