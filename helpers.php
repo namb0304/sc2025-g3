@@ -32,6 +32,23 @@ function create_user($username, $password) {
     return $stmt->execute([$username, $hashed_password]);
 }
 
+function update_user_profile($user_id, $new_username) {
+    $pdo = get_db_connection();
+    // 新しいユーザー名が自分以外の誰かに使われていないかチェック
+    $stmt = $pdo->prepare('SELECT id FROM fashion_users WHERE username = ? AND id != ?');
+    $stmt->execute([$new_username, $user_id]);
+    if ($stmt->fetch()) {
+        return "このユーザー名は既に使用されています。";
+    }
+
+    $stmt = $pdo->prepare('UPDATE fashion_users SET username = ? WHERE id = ?');
+    if ($stmt->execute([$new_username, $user_id])) {
+        $_SESSION['username'] = $new_username; // セッション情報も更新
+        return true;
+    }
+    return "プロフィールの更新に失敗しました。";
+}
+
 // --- クローゼット (closet_items) 関連 ---
 
 function get_closet_items_by_user_id($user_id) {
@@ -54,9 +71,6 @@ function find_closet_item_by_id($item_id, $user_id = null) {
     return $stmt->fetch();
 }
 
-/**
- * 画像データをデータベースに直接保存し、作成されたアイテムのIDを返す関数
- */
 function create_closet_item_in_db($user_id, $image_data, $mime_type, $category, $genres, $notes) {
     $pdo = get_db_connection();
     $genres_pg_array = '{' . implode(',', array_map('trim', $genres)) . '}';
@@ -70,9 +84,7 @@ function create_closet_item_in_db($user_id, $image_data, $mime_type, $category, 
     $stmt->bindParam(5, $genres_pg_array);
     $stmt->bindParam(6, $notes);
     
-    // 実行に成功したら、最後に挿入された行のIDを返す
     if ($stmt->execute()) {
-        // 'closet_items_id_seq' はPostgreSQLが自動で作るシーケンス名です
         return $pdo->lastInsertId('closet_items_id_seq');
     } else {
         return false;
@@ -109,8 +121,6 @@ function create_post($user_id, $title, $description, $closet_item_id = null) {
     return $stmt->execute([$user_id, $title, $description, $closet_item_id]);
 }
 
-// ★★★ ここが改善点 ★★★
-// index.phpでいいね数を効率的に表示するために、いいね数を取得するSQLに修正
 function get_all_posts($search_query = '') {
     $pdo = get_db_connection();
     $sql = "
@@ -151,6 +161,21 @@ function delete_post($post_id, $user_id) {
     $pdo = get_db_connection();
     $stmt = $pdo->prepare('DELETE FROM posts WHERE id = ? AND user_id = ?');
     return $stmt->execute([$post_id, $user_id]);
+}
+
+function get_liked_posts_by_user_id($user_id) {
+    $pdo = get_db_connection();
+    $sql = "
+        SELECT p.*, u.username 
+        FROM posts p
+        JOIN likes l ON p.id = l.post_id
+        JOIN fashion_users u ON p.user_id = u.id
+        WHERE l.user_id = ? AND l.like_type = 1
+        ORDER BY l.created_at DESC
+    ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$user_id]);
+    return $stmt->fetchAll();
 }
 
 // --- コメント (comments) 関連 ---
