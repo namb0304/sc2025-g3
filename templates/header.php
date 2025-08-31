@@ -31,7 +31,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <?php // 'active' を 'nav-item--active' に変更 ?>
                     <a href="<?= BASE_URL ?>/post.php" class="nav-item <?= ($current_page === 'post.php' || $current_page === 'post_from_closet.php' || $current_page === 'post_new_item.php') ? 'nav-item--active' : '' ?>">投稿</a>
                     <a href="<?= BASE_URL ?>/mypage.php" class="nav-item <?= ($current_page === 'mypage.php') ? 'nav-item--active' : '' ?>">マイページ</a>
-                    <a href="<?= BASE_URL ?>/logout.php" class="nav-item">ログアウト</a>
+                    <a href="<?= BASE_URL ?>/general.html" class="nav-item">ログアウト</a>
                 <?php else: ?>
                     <a href="<?= BASE_URL ?>/login.php" class="nav-item <?= ($current_page === 'login.php') ? 'nav-item--active' : '' ?>">ログイン</a>
                     <a href="<?= BASE_URL ?>/register.php" class="nav-item <?= ($current_page === 'register.php') ? 'nav-item--active' : '' ?>">新規登録</a>
