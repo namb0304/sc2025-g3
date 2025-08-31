@@ -68,3 +68,5 @@ CREATE INDEX ON posts (user_id);
 CREATE INDEX ON posts (closet_item_id);
 CREATE INDEX ON comments (post_id);
 CREATE INDEX ON likes (post_id);
+
+ALTER TABLE likes ADD COLUMN created_at TIMESTAMPTZ DEFAULT NOW();
