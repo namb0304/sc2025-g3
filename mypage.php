@@ -43,6 +43,7 @@ include 'templates/header.php';
         <a href="?tab=posts" class="tab-link <?= $tab === 'posts' ? 'active' : '' ?>">投稿</a>
         <a href="?tab=closet" class="tab-link <?= $tab === 'closet' ? 'active' : '' ?>">デジタルクローゼット</a>
         <a href="?tab=likes" class="tab-link <?= $tab === 'likes' ? 'active' : '' ?>">いいね</a>
+        <a href="https://gms.gdl.jp/~ryomo0797/summer_seminar/llm.py" class="tab-link" target="_blank" rel="noopener noreferrer">AI提案 <i class="fas fa-external-link-alt"></i></a>
     </div>
 
     <div class="tab-content">
